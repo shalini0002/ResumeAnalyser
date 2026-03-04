@@ -25,6 +25,7 @@ async def upload_resume(file: UploadFile = File(...)):
 
     return {
         'filename': file.filename, 
+        'ai_parsed_resume': structured_data,
         'text_preview': extracted_text[:500] + '...' if len(extracted_text) > 500 else extracted_text,
         'message': 'Resume uploaded and parsed successfully',
         'content_type': file.content_type,
