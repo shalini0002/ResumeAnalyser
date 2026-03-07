@@ -1,8 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    appDir: true,
-  },
+  // App Router is now stable, no need for experimental.appDir
 }
 
 module.exports = nextConfig
