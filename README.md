@@ -1,50 +1,278 @@
-# Next.js Application
+🚀 AI Resume Analyzer & Job Matcher
 
-A modern Next.js application with TypeScript and Tailwind CSS.
+An AI-powered Resume Analyzer that extracts resume data, analyzes it, and matches it with job descriptions using semantic AI matching and ATS scoring.
 
-## Getting Started
+This system converts resumes into structured data, compares them with job descriptions, and provides insights like:
 
-First, install the dependencies:
+ATS Score
 
-```bash
-npm install
-# or
-yarn install
-# or
-pnpm install
-```
+Resume vs Job Match %
 
-Then, run the development server:
+Resume Improvements
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+AI Resume Bullet Enhancements
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Built with FastAPI, Gemini AI, and Python.
 
-## Project Structure
+✨ Features
+📄 Resume Upload
 
-- `app/` - App Router directory containing pages and layouts
-- `public/` - Static assets
-- `app/globals.css` - Global styles with Tailwind CSS
-- `tailwind.config.ts` - Tailwind CSS configuration
-- `next.config.js` - Next.js configuration
-- `tsconfig.json` - TypeScript configuration
+Upload a PDF/DOC resume which is automatically parsed into plain text.
 
-## Learn More
+🤖 AI Resume Parsing
 
-To learn more about Next.js, take a look at the following resources:
+Using Gemini AI, the resume is structured into:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-- [Tailwind CSS Documentation](https://tailwindcss.com/docs) - learn about Tailwind CSS features.
+Skills
 
-## Deploy on Vercel
+Experience
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Education
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Projects
+
+Achievements
+
+📊 ATS Score Calculation
+
+Analyzes how well the resume passes Applicant Tracking Systems (ATS).
+
+Score is calculated based on:
+
+Keyword matching
+
+Skills coverage
+
+Job relevance
+
+Experience alignment
+
+🎯 Resume vs Job Matching
+
+Uses semantic AI embeddings to calculate how closely the resume matches a job description.
+
+Outputs:
+
+Match percentage
+
+Missing skills
+
+Strength areas
+
+✍️ AI Resume Bullet Rewriter
+
+Improves weak resume statements.
+
+Example:
+
+Input
+
+Built React applications
+
+AI Output
+
+Developed high-performance React applications using modern hooks and optimized rendering, improving UI responsiveness.
+🏗️ Tech Stack
+Backend
+
+Python
+
+FastAPI
+
+Uvicorn
+
+AI
+
+Google Gemini API
+
+Gemini Embeddings
+
+Database
+
+PostgreSQL
+
+SQLAlchemy ORM
+
+File Parsing
+
+pdfplumber
+
+Other
+
+python-dotenv
+
+numpy
+
+📂 Project Structure
+resume-analyser
+│
+├── app
+│   ├── main.py
+│   │
+│   ├── routes
+│   │   ├── resume.py
+│   │   └── jd.py
+│   │
+│   ├── services
+│   │   ├── gemini_parser.py
+│   │   ├── embedding_service.py
+│   │   ├── jd_matcher.py
+│   │   └── ats_engine.py
+│   │
+│   └── utils
+│       └── pdf_parser.py
+│
+├── requirements.txt
+├── .env
+└── README.md
+⚙️ Installation & Setup
+1️⃣ Check Python Installation
+python --version
+pip --version
+2️⃣ Create Project Folder
+mkdir resume-analyser
+cd resume-analyser
+3️⃣ Create Virtual Environment
+python -m venv venv
+
+Activate it:
+
+Mac/Linux
+source venv/bin/activate
+Windows
+venv\Scripts\activate
+4️⃣ Install Dependencies
+pip install fastapi uvicorn python-multipart sqlalchemy psycopg2-binary python-dotenv
+📦 File Upload Support
+pip install python-multipart
+📄 Install PDF Parser
+
+Used for extracting text from resumes.
+
+pip install pdfplumber
+🤖 Install Gemini AI SDK
+pip install google-generativeai python-dotenv
+🧠 Install Embedding Support
+pip install numpy
+📦 Freeze Dependencies
+pip freeze > requirements.txt
+🔑 Environment Variables
+
+Create a .env file:
+
+GEMINI_API_KEY=your_gemini_api_key_here
+🚀 Run the Server
+
+Start the FastAPI server:
+
+uvicorn app.main:app --reload
+
+Server will run on:
+
+http://127.0.0.1:8000
+
+Swagger API docs:
+
+http://127.0.0.1:8000/docs
+📄 Resume Upload API
+
+Endpoint:
+
+POST /resume/upload
+
+Function:
+
+Upload resume file
+
+Convert PDF → Text
+
+Parse resume using Gemini AI
+
+Return structured resume data
+
+📑 Job Description API
+
+Endpoint:
+
+POST /jd/analyze
+
+Function:
+
+Accept Job Description
+
+Generate embeddings
+
+Compare with resume embeddings
+
+Calculate match score
+
+🧠 Hybrid ATS + AI Matching Engine
+
+The system uses two matching strategies:
+
+1️⃣ ATS Keyword Matching
+
+Checks keyword overlap
+
+Measures skill coverage
+
+Calculates ATS compatibility score
+
+2️⃣ Semantic AI Matching
+
+Using Gemini embeddings to understand context.
+
+Example:
+
+Resume: React.js
+Job: Frontend Frameworks
+
+Even if keywords differ, AI detects semantic similarity.
+
+📊 Example Output
+ATS Score: 82%
+
+Job Match: 76%
+
+Strengths:
+- React.js
+- JavaScript
+- REST APIs
+
+Missing Skills:
+- Docker
+- Kubernetes
+- GraphQL
+🧠 Future Improvements
+
+AI Resume Improvement Suggestions
+
+Resume Bullet Optimizer
+
+Cover Letter Generator
+
+AI Job Recommendation Engine
+
+Recruiter Dashboard
+
+👩‍💻 Author
+
+Shalini Sharma
+
+Full Stack Developer | AI Enthusiast
+
+Skills:
+
+React
+
+Node.js
+
+Python
+
+FastAPI
+
+Generative AI
+
+LLM Applications
+
+💡 This project demonstrates how AI can transform the recruitment pipeline by making resume screening intelligent and automated.
