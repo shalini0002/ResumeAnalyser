@@ -27,16 +27,57 @@
     
 
 from app.services.embedding_service import get_embedding, cosine_similarity
+from app.services.ats_scorer import ats_score
+import re
 
-def semantic_match(resume_text: str, jd_text:str) -> dict:
+def extract_skills(text: str):
+    skills_db = [
+        "react", "javascript", "typescript", "node",
+        "docker", "aws", "graphql", "sql",
+        "mongodb", "next.js", "fastapi", "python"
+    ]
+
+    text_lower = text.lower()
+    return [skill for skill in skills_db if skill in text_lower]
+
+
+def hybrid_match_engine(resume_text: str, jd_text: str) -> dict:
+    # --- Semantic Score ---
     resume_vector = get_embedding(resume_text)
     jd_vector = get_embedding(jd_text)
+    semantic_score = cosine_similarity(resume_vector, jd_vector)
 
-    similarity_score = cosine_similarity(resume_vector, jd_vector)
+    semantic_percentage = int(semantic_score * 100)
 
-    match_percentage = int(similarity_score * 100)
+    # --- Skill Score ---
+    resume_skills = extract_skills(resume_text)
+    jd_skills = extract_skills(jd_text)
+
+    matched = list(set(resume_skills) & set(jd_skills))
+    missing = list(set(jd_skills) - set(resume_skills))
+
+    if len(jd_skills) == 0:
+        skill_score = 0
+    else:
+        skill_score = int((len(matched) / len(jd_skills)) * 100)
+
+    # --- ATS Score ---
+    ats_result = ats_score(resume_text)
+    ats_value = ats_result["ats_score"]
+
+    # --- Final Weighted Score ---
+    overall_score = int(
+        (0.5 * semantic_percentage) +
+        (0.3 * skill_score) +
+        (0.2 * ats_value)
+    )
 
     return {
-        "semantic_match_percentage": match_percentage,
-        "similarity_score_raw": similarity_score
+        "overall_match_score": overall_score,
+        "semantic_score": semantic_percentage,
+        "skill_score": skill_score,
+        "ats_score": ats_value,
+        "matched_skills": matched,
+        "missing_skills": missing,
+        "ats_issues": ats_result["ats_issues"]
     }
