@@ -22,7 +22,7 @@ export default function RootLayout({
           <h1 className="text-xl font-bold mb-10">AI Resume Tool</h1>
 
           <nav className="space-y-4">
-            <a href="/" className="block hover:text-blue-400 bg-red-500 px-4">Dashboard</a>
+            <a href="/" className="block hover:text-blue-400 px-4">Dashboard</a>
             <a href="/upload" className="block hover:text-blue-400 px-4">Upload Resume</a>
             <a href="/match" className="block hover:text-blue-400 px-4">Job Match</a>
             <a href="/improve" className="block hover:text-blue-400 px-4">Improve Resume</a>

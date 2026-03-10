@@ -1,10 +1,20 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from app.routes import health, resume, jd
 from app.routes.resume_ai_suggestions import router as ai_router
 from app.routes.bullet_rewriter import router as bullet_router
 from app.routes.skill_extractor import router as skill_router
 
 app = FastAPI(title="Resume Analyser API")
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(health.router)
 app.include_router(resume.router)
