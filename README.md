@@ -243,6 +243,142 @@ Missing Skills:
 - Docker
 - Kubernetes
 - GraphQL
+
+  # 🚀 AI Resume Analyzer – Frontend Setup
+
+This project is the **frontend application** for the AI Resume Analyzer platform.
+It allows users to upload their resume, analyze ATS score, compare with job descriptions, and improve resume bullets using AI.
+
+The frontend is built using **Next.js (App Router)**.
+
+---
+
+# 🧰 Tech Stack
+
+* **Next.js 14**
+* **React**
+* **TypeScript**
+* **Tailwind CSS**
+* **FastAPI Backend**
+
+---
+
+# 🚀 Step 1 — Create the Frontend Project
+
+Create a new Next.js application.
+
+```bash
+npx create-next-app@latest ai-resume-analyzer
+```
+
+During setup choose:
+
+```
+✔ TypeScript → Yes
+✔ Tailwind CSS → Yes
+✔ App Router → Yes
+✔ src directory → Yes
+```
+
+Navigate into the project folder:
+
+```bash
+cd ai-resume-analyzer
+```
+
+---
+
+# 📂 Step 2 — Recommended Folder Structure
+
+Create the following folders and files inside the **src** directory.
+
+```
+src
+ ├ app
+ │  ├ page.tsx
+ │  ├ upload
+ │  │   └ page.tsx
+ │  ├ analyze
+ │  │   └ page.tsx
+ │  ├ improve
+ │  │   └ page.tsx
+ │  └ rewrite
+ │      └ page.tsx
+ │
+ ├ components
+ │   ├ UploadResume.tsx
+ │   ├ ATSScoreCard.tsx
+ │   ├ JobMatch.tsx
+ │   └ BulletRewrite.tsx
+ │
+ ├ services
+ │   └ api.ts
+```
+
+### Folder Explanation
+
+| Folder        | Purpose                        |
+| ------------- | ------------------------------ |
+| `app/`        | Next.js App Router pages       |
+| `components/` | Reusable UI components         |
+| `services/`   | API calls to backend           |
+| `upload/`     | Resume upload page             |
+| `analyze/`    | ATS score + resume analysis    |
+| `improve/`    | Resume improvement suggestions |
+| `rewrite/`    | AI bullet rewriting feature    |
+
+---
+
+# 🧠 Step 3 — Create API Service
+
+Create a service file to communicate with the **FastAPI backend**.
+
+File:
+
+```
+src/services/api.ts
+```
+
+This file keeps **all backend communication centralized**.
+
+---
+
+# 🎨 Step 4 — Build Resume Upload Page
+
+Create the upload page:
+
+```
+src/app/upload/page.tsx
+```
+
+This page will allow users to:
+
+* Upload their resume (PDF)
+* Send the file to the backend
+* Extract resume text
+* Continue to ATS analysis
+
+Later we will connect it to the **UploadResume component**.
+
+---
+
+# ▶️ Run the Frontend
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+Open in browser:
+
+```
+http://localhost:3000
+```
+
+---
+
+
 🧠 Future Improvements
 
 AI Resume Improvement Suggestions
