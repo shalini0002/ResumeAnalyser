@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { analyzeJD } from "../../services/api";
 
+// Job Match Analysis Page - Fixed for deployment
 export default function AnalyzePage() {
     const [resumeText, setResumeText] = useState("");
     const [jobDescription, setJobDescription] = useState("");
