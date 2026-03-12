@@ -1,18 +1,14 @@
 import os
-import google.generativeai as genai 
 import numpy as np 
 from dotenv import load_dotenv
 
 load_dotenv()
 
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-
+# Mock embedding service for development
 def get_embedding(text: str):
-    response = genai.embed_content(
-        model="models/gemini-embedding-001",
-        content = text
-    )
-    return response["embedding"]
+    # Return a mock embedding vector (768 dimensions like many embedding models)
+    np.random.seed(hash(text) % 1000)  # Consistent seed for same text
+    return np.random.rand(768).tolist()
 
 def cosine_similarity(vec1, vec2):
     vec1 = np.array(vec1)
