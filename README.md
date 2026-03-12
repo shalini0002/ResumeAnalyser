@@ -5,7 +5,6 @@ An AI-powered Resume Analyzer that extracts resume data, analyzes it, and matche
 This system converts resumes into structured data, compares them with job descriptions, and provides insights like:
 
 ATS Score
-
 Resume vs Job Match %
 
 Resume Improvements
