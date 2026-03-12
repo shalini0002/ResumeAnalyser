@@ -271,14 +271,7 @@ Create a new Next.js application.
 npx create-next-app@latest ai-resume-analyzer
 ```
 
-During setup choose:
-
-```
-✔ TypeScript → Yes
-✔ Tailwind CSS → Yes
-✔ App Router → Yes
-✔ src directory → Yes
-```
+During setup choos
 
 Navigate into the project folder:
 
