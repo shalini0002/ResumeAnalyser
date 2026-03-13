@@ -6,8 +6,8 @@ import React from 'react'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Next.js App',
-  description: 'A Next.js application',
+  title: 'ResumeAI - AI Resume Analyzer',
+  description: 'AI-powered resume analysis and ATS optimization platform',
 }
 
 export default function RootLayout({

@@ -26,8 +26,16 @@ export default function Dashboard() {
       
       try {
         const result = await uploadResume(selectedFile);
-        setAtsScore(result.ats_score || 75);
+        const score = result.ats_score || 75;
+        setAtsScore(score);
         setAnalysis(result);
+        
+        // Save to localStorage for persistence
+        localStorage.setItem('resumeScore', score.toString());
+        
+        // Extract text and save for analyze page
+        const text = await selectedFile.text();
+        localStorage.setItem('resumeText', text);
       } catch (error) {
         console.error('Upload failed:', error);
         setAtsScore(75);
