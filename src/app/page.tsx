@@ -223,7 +223,6 @@ export default function Dashboard() {
                     </>
                   )}
                 </div>
-
                 <button 
                   onClick={handleViewAnalysis}
                   className="w-full mt-4 sm:mt-6 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition-colors text-sm sm:text-base"
