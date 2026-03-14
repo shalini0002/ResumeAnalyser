@@ -68,16 +68,18 @@ export default function Dashboard() {
             
             {/* Auth Buttons */}
             <div className="flex items-center space-x-2 sm:space-x-4">
-              <button className="text-gray-500 hover:text-gray-700 px-2 sm:px-3 py-2 rounded-md text-xs sm:text-sm font-medium">
+              {/* <button className="text-gray-500 hover:text-gray-700 px-2 sm:px-3 py-2 rounded-md text-xs sm:text-sm font-medium">
                 Login
               </button>
               <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium">
                 Sign Up
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
       </header>
+
+      
 
       {/* Main Content */}
       <div className="flex flex-col lg:flex-row min-h-screen pt-16">
