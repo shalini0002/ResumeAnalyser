@@ -11,17 +11,16 @@ export default function AnalyzePage() {
     const [activeSection, setActiveSection] = useState("rewrite");
     const [resumeScore, setResumeScore] = useState<number | null>(null);
 
-    // Load saved resume score and text from localStorage on component mount
+    // Load saved resume score from localStorage on component mount
     useEffect(() => {
         const savedScore = localStorage.getItem('resumeScore');
-        const savedResumeText = localStorage.getItem('resumeText');
         
         if (savedScore) {
             setResumeScore(parseInt(savedScore));
         }
-        if (savedResumeText) {
-            setResumeText(savedResumeText);
-        }
+        
+        // Keep resume text empty for manual input
+        setResumeText('');
     }, []);
 
     const handleAnalyze = async () => {
