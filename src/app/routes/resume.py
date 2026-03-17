@@ -2,6 +2,7 @@ from fastapi import APIRouter, UploadFile, File
 import os
 from app.services.resume_parser import parse_resume
 from app.services.resume_structurer import structure_resume
+from app.services.ats_scorer import ats_score
 
 router = APIRouter(prefix='/resume', tags=['resume'])
 
@@ -22,6 +23,9 @@ async def upload_resume(file: UploadFile = File(...)):
     extracted_text = parse_resume(file_path)
 
     structured_data = structure_resume(extracted_text)
+    
+    # Get ATS score for the resume
+    ats_result = ats_score(extracted_text)
 
     return {
         'filename': file.filename, 
@@ -31,5 +35,9 @@ async def upload_resume(file: UploadFile = File(...)):
         'content_type': file.content_type,
         'file_path': file_path,
         'size_in_bytes': len(content),
-        'structured_data': structured_data
+        'structured_data': structured_data,
+        'ats_score': ats_result['ats_score'],
+        'matched_skills': ats_result.get('matched_skills', []),
+        'missing_skills': ats_result.get('missing_skills', []),
+        'analysis': f"Resume analysis completed with ATS score: {ats_result['ats_score']}"
     }
