@@ -11,7 +11,7 @@ export default function AnalyzePage() {
     const [activeSection, setActiveSection] = useState("rewrite");
     const [resumeScore, setResumeScore] = useState<number | null>(null);
 
-    // Load saved resume score and analysis results from localStorage on component mount
+    // Load saved resume score and analysis results from localStorage/sessionStorage on component mount
     useEffect(() => {
         const savedScore = localStorage.getItem('resumeScore');
         const savedResult = sessionStorage.getItem('analysisResult');
@@ -20,7 +20,7 @@ export default function AnalyzePage() {
             setResumeScore(parseInt(savedScore));
         }
         
-        // Load analysis results from sessionStorage (tab-specific)
+        // Load analysis results from sessionStorage (session-specific)
         if (savedResult) {
             try {
                 const parsedResult = JSON.parse(savedResult);
@@ -30,13 +30,13 @@ export default function AnalyzePage() {
             }
         }
         
-        // Load resume text from sessionStorage (tab-specific)
+        // Load resume text from sessionStorage (session-specific)
         const savedResumeText = sessionStorage.getItem('resumeText');
         if (savedResumeText) {
             setResumeText(savedResumeText);
         }
         
-        // Load job description from sessionStorage (tab-specific)
+        // Load job description from sessionStorage (session-specific)
         const savedJobDescription = sessionStorage.getItem('jobDescription');
         if (savedJobDescription) {
             setJobDescription(savedJobDescription);
@@ -64,27 +64,8 @@ export default function AnalyzePage() {
         }
     }, [jobDescription]);
 
-    // Clear sessionStorage when tab is closed
-    useEffect(() => {
-        const handleTabClose = () => {
-            // Clear all session data when tab is closed
-            sessionStorage.removeItem('analysisResult');
-            sessionStorage.removeItem('resumeText');
-            sessionStorage.removeItem('jobDescription');
-        };
-
-        const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-            handleTabClose();
-        };
-
-        // Add event listener for tab close
-        window.addEventListener('beforeunload', handleBeforeUnload);
-        
-        // Cleanup event listener
-        return () => {
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-        };
-    }, []);
+    // Note: sessionStorage automatically clears when browser is closed
+    // No need for manual cleanup - it's designed for session-based storage
 
     const handleAnalyze = async () => {
         if (!resumeText || !jobDescription) return;
