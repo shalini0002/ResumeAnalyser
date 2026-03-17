@@ -11,16 +11,79 @@ export default function AnalyzePage() {
     const [activeSection, setActiveSection] = useState("rewrite");
     const [resumeScore, setResumeScore] = useState<number | null>(null);
 
-    // Load saved resume score from localStorage on component mount
+    // Load saved resume score and analysis results from localStorage on component mount
     useEffect(() => {
         const savedScore = localStorage.getItem('resumeScore');
+        const savedResult = sessionStorage.getItem('analysisResult');
         
         if (savedScore) {
             setResumeScore(parseInt(savedScore));
         }
         
-        // Keep resume text empty for manual input
-        setResumeText('');
+        // Load analysis results from sessionStorage (tab-specific)
+        if (savedResult) {
+            try {
+                const parsedResult = JSON.parse(savedResult);
+                setResult(parsedResult);
+            } catch (error) {
+                console.error('Error parsing saved result:', error);
+            }
+        }
+        
+        // Load resume text from sessionStorage (tab-specific)
+        const savedResumeText = sessionStorage.getItem('resumeText');
+        if (savedResumeText) {
+            setResumeText(savedResumeText);
+        }
+        
+        // Load job description from sessionStorage (tab-specific)
+        const savedJobDescription = sessionStorage.getItem('jobDescription');
+        if (savedJobDescription) {
+            setJobDescription(savedJobDescription);
+        }
+    }, []);
+
+    // Save analysis results to sessionStorage when they change
+    useEffect(() => {
+        if (result) {
+            sessionStorage.setItem('analysisResult', JSON.stringify(result));
+        }
+    }, [result]);
+
+    // Save resume text to sessionStorage when it changes
+    useEffect(() => {
+        if (resumeText) {
+            sessionStorage.setItem('resumeText', resumeText);
+        }
+    }, [resumeText]);
+
+    // Save job description to sessionStorage when it changes
+    useEffect(() => {
+        if (jobDescription) {
+            sessionStorage.setItem('jobDescription', jobDescription);
+        }
+    }, [jobDescription]);
+
+    // Clear sessionStorage when tab is closed
+    useEffect(() => {
+        const handleTabClose = () => {
+            // Clear all session data when tab is closed
+            sessionStorage.removeItem('analysisResult');
+            sessionStorage.removeItem('resumeText');
+            sessionStorage.removeItem('jobDescription');
+        };
+
+        const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+            handleTabClose();
+        };
+
+        // Add event listener for tab close
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        
+        // Cleanup event listener
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
     }, []);
 
     const handleAnalyze = async () => {
@@ -49,21 +112,33 @@ export default function AnalyzePage() {
             title: "Resume Rewriter",
             description: "AI-powered bullet point improvements",
             icon: "✍️",
-            content: result?.rewrite_suggestions || "Transform your resume bullets with AI enhancements"
+            content: result?.semantic_result?.ats_issues?.length > 0 
+                ? result.semantic_result.ats_issues.map((issue: string) => `${issue}`)
+                : ["Your resume looks good! Consider adding more quantifiable achievements."]
         },
         {
             id: "skill-gap",
             title: "Skill Gap Analysis",
             description: "Identify missing skills for target roles",
             icon: "📊",
-            content: result?.skill_gap_analysis || "Compare your skills against job requirements"
+            content: result?.semantic_result?.missing_skills?.length > 0
+                ? result.semantic_result.missing_skills.map((skill: string) => `Consider adding ${skill}`)
+                : ["Great job! You have the key skills for this position."]
         },
         {
             id: "improve",
             title: "Resume Improvements",
             description: "Get actionable suggestions to enhance your resume",
             icon: "🚀",
-            content: result?.improvement_suggestions || "Optimize your resume for better ATS performance"
+            content: result && result.semantic_result ? [
+                `Overall Match Score: ${result.semantic_result.overall_match_score}%`,
+                `Semantic Score: ${result.semantic_result.semantic_score}%`,
+                `Skill Score: ${result.semantic_result.skill_score}%`,
+                `ATS Score: ${result.semantic_result.ats_score}%`,
+                result.semantic_result.matched_skills?.length > 0 
+                    ? `Matched Skills: ${result.semantic_result.matched_skills.join(', ')}`
+                    : "Focus on aligning your skills with job requirements"
+            ] : ["Upload resume and job description to see detailed analysis"]
         }
     ];
 
