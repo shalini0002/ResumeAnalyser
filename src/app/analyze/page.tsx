@@ -30,17 +30,18 @@ export default function AnalyzePage() {
             }
         }
         
-        // Load resume text from sessionStorage (session-specific)
-        const savedResumeText = sessionStorage.getItem('resumeText');
-        if (savedResumeText) {
-            setResumeText(savedResumeText);
+        // Only load resume text from localStorage (home page upload) - not from sessionStorage
+        const savedResumeTextFromHome = localStorage.getItem('resumeText');
+        
+        if (savedResumeTextFromHome) {
+            setResumeText(savedResumeTextFromHome);
+        } else {
+            // Keep empty if no resume was uploaded on home page
+            setResumeText('');
         }
         
-        // Load job description from sessionStorage (session-specific)
-        const savedJobDescription = sessionStorage.getItem('jobDescription');
-        if (savedJobDescription) {
-            setJobDescription(savedJobDescription);
-        }
+        // Don't auto-load job description - keep it empty for fresh input
+        setJobDescription('');
     }, []);
 
     // Save analysis results to sessionStorage when they change
@@ -102,9 +103,17 @@ export default function AnalyzePage() {
             title: "Skill Gap Analysis",
             description: "Identify missing skills for target roles",
             icon: "📊",
-            content: result?.semantic_result?.missing_skills?.length > 0
-                ? result.semantic_result.missing_skills.map((skill: string) => `Consider adding ${skill}`)
-                : ["Great job! You have the key skills for this position."]
+            content: result?.semantic_result ? [
+                `✅ Matched Skills (${result.semantic_result.matched_skills?.length || 0}):`,
+                ...(result.semantic_result.matched_skills?.length > 0 
+                    ? result.semantic_result.matched_skills.map((skill: string) => ` ${skill}`)
+                    : ["No matched skills found"]),
+                "",
+                `❌ Missing Skills (${result.semantic_result.missing_skills?.length || 0}):`,
+                ...(result.semantic_result.missing_skills?.length > 0
+                    ? result.semantic_result.missing_skills.map((skill: string) => ` Consider adding ${skill}`)
+                    : ["No missing skills - Great job!"])
+            ] : ["Upload resume and job description to see skill analysis"]
         },
         {
             id: "improve",
@@ -217,11 +226,14 @@ export default function AnalyzePage() {
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 mb-6">
                             <div>
                                 <label className="block text-sm font-medium mb-2">Resume Text</label>
+                                <div className="mb-2 text-xs text-gray-400">
+                                    {resumeText ? '✓ Resume loaded from upload' : '📝 Upload resume on home page to auto-fetch, or paste text below'}
+                                </div>
                                 <textarea
                                     value={resumeText}
                                     onChange={(e) => setResumeText(e.target.value)}
                                     className="w-full h-32 p-3 bg-gray-700 border border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 text-white text-sm lg:text-base"
-                                    placeholder="Paste your resume text here..."
+                                    placeholder="Paste your resume text here or upload on home page to auto-fetch..."
                                 />
                                 {resumeScore && (
                                     <div className="mt-2 text-sm text-green-400">

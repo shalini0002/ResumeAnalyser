@@ -249,19 +249,6 @@ export default function Dashboard() {
                       {atsScore >= 80 ? 'Excellent' : atsScore >= 60 ? 'Good' : 'Needs Improvement'}
                     </span>
                   </div>
-                  
-                  {analysis && (
-                    <>
-                      <div className="flex justify-between text-xs sm:text-sm">
-                        <span className="text-gray-600">Skills Matched:</span>
-                        <span className="font-medium text-gray-900">{analysis.matched_skills?.length || 8}</span>
-                      </div>
-                      <div className="flex justify-between text-xs sm:text-sm">
-                        <span className="text-gray-600">Missing Skills:</span>
-                        <span className="font-medium text-gray-900">{analysis.missing_skills?.length || 3}</span>
-                      </div>
-                    </>
-                  )}
                 </div>
                 <button 
                   onClick={handleViewAnalysis}
