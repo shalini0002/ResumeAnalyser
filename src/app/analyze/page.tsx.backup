@@ -1,0 +1,204 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { analyzeJD } from "../../services/api";
+
+export default function AnalyzePage() {
+    const [resumeText, setResumeText] = useState("");
+    const [jobDescription, setJobDescription] = useState("");
+    const [result, setResult] = useState<any>(null);
+    const [loading, setLoading] = useState(false);
+    const [activeSection, setActiveSection] = useState("rewrite");
+    const [resumeScore, setResumeScore] = useState<number | null>(null);
+
+    // Load saved resume score and analysis results from localStorage/sessionStorage on component mount
+    useEffect(() => {
+        const savedScore = localStorage.getItem('resumeScore');
+        const savedResult = sessionStorage.getItem('analysisResult');
+        
+        if (savedScore) {
+            setResumeScore(parseInt(savedScore));
+        }
+        
+        // Load analysis results from sessionStorage (session-specific)
+        if (savedResult) {
+            try {
+                const parsedResult = JSON.parse(savedResult);
+                setResult(parsedResult);
+            } catch (error) {
+                console.error('Error parsing saved result:', error);
+            }
+        }
+        
+        // Only load resume text from localStorage (home page upload) - not from sessionStorage
+        const savedResumeTextFromHome = localStorage.getItem('resumeText');
+        
+        if (savedResumeTextFromHome) {
+            setResumeText(savedResumeTextFromHome);
+        } else {
+            // Keep empty if no resume was uploaded on home page
+            setResumeText('');
+        }
+        
+        // Don't auto-load job description - keep it empty for fresh input
+        setJobDescription('');
+    }, []);
+
+    // Save analysis results to sessionStorage when they change
+    useEffect(() => {
+        if (result) {
+            sessionStorage.setItem('analysisResult', JSON.stringify(result));
+        }
+    }, [result]);
+
+    // Save resume text to sessionStorage when it changes
+    useEffect(() => {
+        if (resumeText) {
+            sessionStorage.setItem('resumeText', resumeText);
+        }
+    }, [resumeText]);
+
+    // Save job description to sessionStorage when it changes
+    useEffect(() => {
+        if (jobDescription) {
+            sessionStorage.setItem('jobDescription', jobDescription);
+        }
+    }, [jobDescription]);
+
+    // Note: sessionStorage automatically clears when browser is closed
+    // No need for manual cleanup - it's designed for session-based storage
+
+    const handleAnalyze = async () => {
+        if (!resumeText || !jobDescription) return;
+        
+        setLoading(true);
+        try {
+            const data = await analyzeJD(resumeText, jobDescription);
+            setResult(data);
+            // Update resume score from analysis if not already set
+            if (!resumeScore) {
+                const score = data.ats_score || data.semantic_result?.ats_score;
+                setResumeScore(score);
+                localStorage.setItem('resumeScore', score.toString());
+            }
+        } catch (error) {
+            console.error("Analysis failed:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const analysisCards = [
+        {
+            id: "rewrite",
+            title: "Resume Rewriter",
+            description: "AI-powered bullet point improvements",
+            icon: "✍️",
+            content: result?.semantic_result?.ats_issues?.length > 0 
+                ? result.semantic_result.ats_issues.map((issue: string) => `${issue}`)
+                : ["Your resume looks good! Consider adding more quantifiable achievements."]
+        },
+        {
+            id: "skill-gap",
+            title: "Skill Gap Analysis",
+            description: "Identify missing skills for target roles",
+            icon: "📊",
+            content: result?.semantic_result ? [
+                `✅ Matched Skills (${result.semantic_result.matched_skills?.length || 0}):`,
+                ...(result.semantic_result.matched_skills?.length > 0 
+                    ? result.semantic_result.matched_skills.map((skill: string) => ` ${skill}`)
+                    : ["No matched skills found"]),
+                "",
+                `❌ Missing Skills (${result.semantic_result.missing_skills?.length || 0}):`,
+                ...(result.semantic_result.missing_skills?.length > 0
+                    ? result.semantic_result.missing_skills.map((skill: string) => ` Consider adding ${skill}`)
+                    : ["No missing skills - Great job!"])
+            ] : ["Upload resume and job description to see skill analysis"]
+        },
+        {
+            id: "improve",
+            title: "Resume Improvements",
+            description: "Get actionable suggestions to enhance your resume",
+            icon: "🚀",
+            content: result && result.semantic_result ? [
+                `Overall Match Score: ${result.semantic_result.overall_match_score}%`,
+                `Semantic Score: ${result.semantic_result.semantic_score}%`,
+                `Skill Score: ${result.semantic_result.skill_score}%`,
+                `ATS Score: ${result.semantic_result.ats_score}%`,
+                result.semantic_result.matched_skills?.length > 0 
+                    ? `Matched Skills: ${result.semantic_result.matched_skills.join(', ')}`
+                    : "Focus on aligning your skills with job requirements"
+            ] : ["Upload resume and job description to see detailed analysis"]
+        }
+    ];
+
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
+            {/* Background Doodles */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-10 left-10 w-20 h-20 border-2 border-blue-300 rounded-full opacity-20 transform rotate-12"></div>
+                <div className="absolute top-40 right-20 w-16 h-16 border-2 border-purple-300 rounded-lg opacity-15 transform -rotate-6"></div>
+                <div className="absolute bottom-20 left-20 w-24 h-12 border-2 border-green-300 rounded-full opacity-10 transform rotate-45"></div>
+                <div className="absolute top-60 left-40 w-12 h-12 border-2 border-yellow-300 rounded opacity-25"></div>
+                <div className="absolute bottom-40 right-10 w-32 h-8 border-2 border-pink-300 rounded-full opacity-20 transform -rotate-12"></div>
+                <div className="absolute top-80 right-40 w-8 h-8 bg-blue-200 rounded-full opacity-10"></div>
+                <div className="absolute bottom-60 left-60 w-16 h-16 border-2 border-indigo-300 transform rotate-45 opacity-15"></div>
+            </div>
+
+            <div className="relative z-10 flex flex-col lg:flex-row h-screen">
+                {/* Left Sidebar - Sketchy Paper Style */}
+                <div className="lg:w-96 bg-white shadow-2xl border-r-4 border-gray-200 p-6 lg:p-8 relative">
+                    {/* Paper Texture Background */}
+                    <div className="absolute inset-0 opacity-5">
+                        <div className="h-full w-full" style={{ 
+                            backgroundImage: `repeating-linear-gradient(
+                                0deg,
+                                transparent,
+                                transparent 2px,
+                                rgba(0,0,0,0.03) 2px,
+                                rgba(0,0,0,0.03) 4px
+                            )`
+                        }}></div>
+                    </div>
+                    
+                    {/* Navigation Items - Sketchy Button Style */}
+                    <nav className="space-y-3">
+                        {analysisCards.map((card) => (
+                            <button
+                                key={card.id}
+                                onClick={() => setActiveSection(card.id)}
+                                className={`group relative w-full text-left p-4 border-2 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg ${
+                                    activeSection === card.id 
+                                        ? 'border-blue-500 bg-gradient-to-r from-blue-50 to-purple-50 -rotate-1' 
+                                        : 'border-gray-300 bg-white hover:border-blue-400 hover:bg-gray-50'
+                                }`}
+                            >
+                                {/* Sketchy button effect */}
+                                <div className="absolute inset-0 border border-gray-400 rounded-lg transform scale-105 pointer-events-none"></div>
+                                
+                                <div className="relative flex items-center space-x-3">
+                                    <span className="text-2xl transform group-hover:scale-110 transition-transform">{card.icon}</span>
+                                    <div>
+                                        <span className="text-sm font-bold text-gray-800 capitalize block">
+                                            {card.id.replace('-', ' ')}
+                                        </span>
+                                        <span className="text-xs text-gray-600">{card.description}</span>
+                                    </div>
+                                        </div>
+                                    )}
+                                </div>
+                                
+                                {activeSection === card.id && (
+                                    <button className="mt-4 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors text-sm lg:text-base">
+                                        View Details
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    );
+}
