@@ -32,6 +32,11 @@ class UserService:
         result = db[USERS_COLLECTION].insert_one(user_doc)
         user_doc["_id"] = result.inserted_id
         
+        # Convert ObjectId to string for response
+        user_doc["id"] = str(result.inserted_id)
+        del user_doc["_id"]
+        del user_doc["hashed_password"]
+        
         return UserResponse(**user_doc)
     
     @staticmethod
@@ -46,7 +51,16 @@ class UserService:
         if not AuthManager.verify_password(password, user["hashed_password"]):
             return None
         
-        return UserInDB(**user)
+        # Convert ObjectId to string for id field and remove _id
+        user_data = {
+            "id": str(user["_id"]),
+            "email": user["email"],
+            "full_name": user["full_name"],
+            "hashed_password": user["hashed_password"],
+            "created_at": user["created_at"],
+            "is_active": user["is_active"]
+        }
+        return UserInDB(**user_data)
     
     @staticmethod
     async def get_user_by_email(email: str) -> Optional[UserInDB]:
@@ -57,7 +71,16 @@ class UserService:
         if not user:
             return None
         
-        return UserInDB(**user)
+        # Convert ObjectId to string for id field and remove _id
+        user_data = {
+            "id": str(user["_id"]),
+            "email": user["email"],
+            "full_name": user["full_name"],
+            "hashed_password": user["hashed_password"],
+            "created_at": user["created_at"],
+            "is_active": user["is_active"]
+        }
+        return UserInDB(**user_data)
     
     @staticmethod
     async def get_user_by_id(user_id: str) -> Optional[UserInDB]:
