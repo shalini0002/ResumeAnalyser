@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { uploadResume } from '../services/api';
+import Navigation from '../components/Navigation';
+import { useAuth } from '../contexts/AuthContext';
 
 interface AnalysisResult {
   ats_score: number;
@@ -13,6 +15,7 @@ interface AnalysisResult {
 
 export default function Dashboard() {
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [atsScore, setAtsScore] = useState<number | null>(null);
@@ -91,36 +94,9 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="h-8 w-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">R</span>
-                </div>
-              </div>
-              <span className="ml-3 text-xl font-bold text-gray-900 hidden sm:block">ResumeAI</span>
-              <span className="ml-3 text-lg font-bold text-gray-900 sm:hidden">R</span>
-            </div>
-            
-            {/* Auth Buttons */}
-            <div className="flex items-center space-x-2 sm:space-x-4">
-              {/* <button className="text-gray-500 hover:text-gray-700 px-2 sm:px-3 py-2 rounded-md text-xs sm:text-sm font-medium">
-                Login
-              </button>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium">
-                Sign Up
-              </button> */}
-            </div>
-          </div>
-        </div>
-      </header>
-
+      {/* Navigation */}
+      <Navigation />
       
-
       {/* Main Content */}
       <div className="flex flex-col lg:flex-row min-h-screen pt-16">
         {/* Left Section - AI Resume App Info */}

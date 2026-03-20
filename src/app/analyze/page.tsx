@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { analyzeJD } from "../../services/api";
+import Navigation from "../../components/Navigation";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function AnalyzePage() {
     const [resumeText, setResumeText] = useState("");
@@ -135,6 +137,8 @@ export default function AnalyzePage() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
+            {/* Navigation */}
+            <Navigation />
             {/* Background Doodles */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-10 left-10 w-20 h-20 border-2 border-blue-300 rounded-full opacity-20 transform rotate-12"></div>
