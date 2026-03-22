@@ -183,8 +183,8 @@ export default function AnalyzePage() {
                                 
                                 <div className="absolute inset-0 flex items-center justify-center">
                                     <div className="text-center">
-                                        <span className="text-4xl font-bold text-gray-800">{resumeScore || 0}</span>
-                                        <span className="text-lg text-gray-600 block">%</span>
+                                        <span className="text-4xl font-bold text-gray-800">{resumeScore || 0}%</span>
+                                      
                                     </div>
                                 </div>
                             </div>
