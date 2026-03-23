@@ -4,8 +4,10 @@ import { useState, useEffect } from "react";
 import { analyzeJD } from "../../services/api";
 import Navigation from "../../components/Navigation";
 import { useAuth } from "../../contexts/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function AnalyzePage() {
+    const router = useRouter();
     const [resumeText, setResumeText] = useState("");
     const [jobDescription, setJobDescription] = useState("");
     const [result, setResult] = useState<any>(null);
@@ -89,15 +91,6 @@ export default function AnalyzePage() {
 
     const analysisCards = [
         {
-            id: "rewrite",
-            title: "Resume Rewriter",
-            description: "AI-powered bullet point improvements",
-            icon: "✍️",
-            content: result?.semantic_result?.ats_issues?.length > 0 
-                ? result.semantic_result.ats_issues.map((issue: string) => `${issue}`)
-                : ["Your resume looks good! Consider adding more quantifiable achievements."]
-        },
-        {
             id: "skill-gap",
             title: "Skill Gap Analysis",
             description: "Identify missing skills for target roles",
@@ -119,7 +112,7 @@ export default function AnalyzePage() {
             title: "Resume Improvements",
             description: "Get actionable suggestions to enhance your resume",
             icon: "🚀",
-            content: result && result.semantic_result ? [
+            content: result?.semantic_result ? [
                 `📊 Overall Match Score: ${result.semantic_result.overall_match_score}%`,
                 `🧠 Semantic Score: ${result.semantic_result.semantic_score}%`,
                 `💼 Skill Score: ${result.semantic_result.skill_score}%`,
@@ -132,6 +125,19 @@ export default function AnalyzePage() {
                     ? `🎯 Areas to Improve: ${result.semantic_result.missing_skills.join(', ')}`
                     : ""
             ] : ["Upload resume and job description to see detailed analysis"]
+        },
+        {
+            id: "correct",
+            title: "Resume Correction",
+            description: "Fix mistakes and download corrected resume",
+            icon: "🔧",
+            content: result?.semantic_result ? [
+                `⚠️ Issues Found: ${result.semantic_result.ats_issues?.length || 0}`,
+                `📚 Missing Skills: ${result.semantic_result.missing_skills?.length || 0}`,
+                `✨ Improvements: ${result.semantic_result.improvements?.length || 0}`,
+                "",
+                "Click to view detailed corrections and download fixed resume"
+            ] : ["Analyze resume to identify and fix mistakes"]
         }
     ];
 
@@ -423,8 +429,11 @@ export default function AnalyzePage() {
 
                                         {/* View Details Button */}
                                         {result && activeSection === card.id && (
-                                            <button className="mt-4 w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-2 rounded-lg hover:from-blue-600 hover:to-purple-600 transition-colors text-sm font-medium shadow-md">
-                                                View Details
+                                            <button 
+                                                onClick={() => router.push('/correct')}
+                                                className="mt-4 w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-2 rounded-lg hover:from-blue-600 hover:to-purple-600 transition-colors text-sm font-medium shadow-md"
+                                            >
+                                                Fix Mistakes & Download
                                             </button>
                                         )}
                                     </div>
