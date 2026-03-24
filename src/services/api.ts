@@ -10,36 +10,57 @@ interface UploadResult {
 }
 
 export const uploadResume = async (file: File): Promise<UploadResult> => {
+  console.log('Starting upload for file:', file.name, 'Type:', file.type);
+  
   try {
     const formData = new FormData();
     formData.append("file", file);
     
+    console.log('Attempting backend upload...');
     const response = await fetch(`${API_URL}/resume/upload`, {
       method: "POST",
       body: formData,
     });
     
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    return response.json();
-  } catch (error) {
-    console.error('Upload error:', error);
-    
-    // Extract text from file and use Gemini AI when backend is not available
-    try {
+    if (response.ok) {
+      console.log('Backend upload successful!');
+      // Backend responded, but we'll still calculate our own score
+      const backendResult = await response.json();
       const text = await file.text();
-      const analysis = await analyzeWithGemini(text, "Analyze this resume for ATS compatibility and provide a score");
+      console.log('Extracted text preview:', text.substring(0, 200) + '...');
+      const ourScore = calculateResumeScore(text);
       
       return {
-        ats_score: analysis.ats_score,
-        matched_skills: analysis.semantic_result?.matched_skills || ['React', 'JavaScript', 'TypeScript'],
-        missing_skills: analysis.semantic_result?.missing_skills || ['Python', 'Docker'],
+        ...backendResult,
+        ats_score: ourScore, // Override backend score with our calculated score
+        matched_skills: extractSkillsFromText(text).matched,
+        missing_skills: extractSkillsFromText(text).missing,
+      };
+    } else {
+      console.log('Backend upload failed with status:', response.status);
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+  } catch (error) {
+    console.error('Upload error:', error);
+    console.log('Falling back to frontend processing...');
+    
+    // Extract text from file and use our scoring when backend is not available
+    try {
+      console.log('Attempting to extract text from file:', file.name, file.type);
+      const text = await file.text();
+      console.log('Successfully extracted text, length:', text.length);
+      // For resume upload alone, calculate ATS score based on resume content quality
+      const score = calculateResumeScore(text);
+      
+      return {
+        ats_score: score,
+        matched_skills: extractSkillsFromText(text).matched,
+        missing_skills: extractSkillsFromText(text).missing,
         analysis: 'Resume analysis completed successfully'
       };
     } catch (textError) {
       console.error('Text extraction error:', textError);
+      console.log('Using fallback mock data');
       // Final fallback to mock data with realistic skill extraction
       const fallbackText = "resume with react javascript typescript node skills";
       const mockSkills = extractSkillsFromText(fallbackText);
@@ -51,6 +72,44 @@ export const uploadResume = async (file: File): Promise<UploadResult> => {
       };
     }
   }
+};
+
+// Helper function to calculate resume score based on content quality
+const calculateResumeScore = (text: string): number => {
+  const skills = extractSkillsFromText(text);
+  const skillCount = skills.matched.length;
+  
+  console.log('Resume text length:', text.length);
+  console.log('Skills found:', skills.matched);
+  console.log('Skill count:', skillCount);
+  
+  // Base score starts at 60
+  let score = 60;
+  
+  // Add points for skills (max 30 points)
+  score += Math.min(skillCount * 3, 30);
+  
+  // Add points for resume length (optimal 300-800 words)
+  const wordCount = text.split(/\s+/).length;
+  console.log('Word count:', wordCount);
+  if (wordCount >= 300 && wordCount <= 800) {
+    score += 10;
+  } else if (wordCount >= 200 && wordCount <= 1000) {
+    score += 5;
+  }
+  
+  // Check for resume sections
+  const sections = ['experience', 'education', 'skills', 'summary', 'projects'];
+  const sectionCount = sections.filter(section => 
+    text.toLowerCase().includes(section)
+  ).length;
+  console.log('Sections found:', sectionCount);
+  score += Math.min(sectionCount * 2, 10);
+  
+  console.log('Final score:', score);
+  
+  // Cap at 95
+  return Math.min(score, 95);
 };
 
 // Helper function to extract skills from text (fallback for frontend)

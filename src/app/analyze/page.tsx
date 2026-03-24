@@ -5,47 +5,44 @@ import { analyzeJD } from "../../services/api";
 import Navigation from "../../components/Navigation";
 import { useAuth } from "../../contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import { useSnackbar } from "../../components/Snackbar";
 
 export default function AnalyzePage() {
     const router = useRouter();
+    const { showSnackbar, SnackbarComponent } = useSnackbar();
     const [resumeText, setResumeText] = useState("");
     const [jobDescription, setJobDescription] = useState("");
     const [result, setResult] = useState<any>(null);
     const [loading, setLoading] = useState(false);
-    const [activeSection, setActiveSection] = useState("rewrite");
+    const [activeSection, setActiveSection] = useState("skill-gap");
     const [resumeScore, setResumeScore] = useState<number | null>(null);
 
     // Load saved resume score and analysis results from localStorage/sessionStorage on component mount
     useEffect(() => {
         const savedScore = localStorage.getItem('resumeScore');
         const savedResult = sessionStorage.getItem('analysisResult');
+        const savedResumeText = localStorage.getItem('resumeText') || sessionStorage.getItem('resumeText');
+        const savedJobDescription = sessionStorage.getItem('jobDescription');
         
         if (savedScore) {
             setResumeScore(parseInt(savedScore));
         }
         
-        // Load analysis results from sessionStorage (session-specific)
-        if (savedResult) {
+        if (savedResumeText) {
+            setResumeText(savedResumeText);
+        }
+        
+        if (savedJobDescription) {
+            setJobDescription(savedJobDescription);
+        }
+        
+        if (savedResult && savedJobDescription && savedResumeText) {
             try {
-                const parsedResult = JSON.parse(savedResult);
-                setResult(parsedResult);
+                setResult(JSON.parse(savedResult));
             } catch (error) {
                 console.error('Error parsing saved result:', error);
             }
         }
-        
-        // Only load resume text from localStorage (home page upload) - not from sessionStorage
-        const savedResumeTextFromHome = localStorage.getItem('resumeText');
-        
-        if (savedResumeTextFromHome) {
-            setResumeText(savedResumeTextFromHome);
-        } else {
-            // Keep empty if no resume was uploaded on home page
-            setResumeText('');
-        }
-        
-        // Don't auto-load job description - keep it empty for fresh input
-        setJobDescription('');
     }, []);
 
     // Save analysis results to sessionStorage when they change
@@ -70,7 +67,15 @@ export default function AnalyzePage() {
     }, [jobDescription]);
 
     const handleAnalyze = async () => {
-        if (!resumeText || !jobDescription) return;
+        if (!resumeText) {
+            showSnackbar('Please upload or paste your resume first!', 'warning');
+            return;
+        }
+        
+        if (!jobDescription) {
+            showSnackbar('Please paste the job description to analyze the match!', 'warning');
+            return;
+        }
         
         setLoading(true);
         try {
@@ -82,8 +87,10 @@ export default function AnalyzePage() {
                 setResumeScore(score);
                 localStorage.setItem('resumeScore', score.toString());
             }
+            showSnackbar('Analysis completed successfully!', 'success');
         } catch (error) {
             console.error("Analysis failed:", error);
+            showSnackbar('Analysis failed. Please try again.', 'error');
         } finally {
             setLoading(false);
         }
@@ -95,7 +102,7 @@ export default function AnalyzePage() {
             title: "Skill Gap Analysis",
             description: "Identify missing skills for target roles",
             icon: "📊",
-            content: result?.semantic_result ? [
+            content: result?.semantic_result && jobDescription ? [
                 `✅ Matched Skills (${result.semantic_result.matched_skills?.length || 0}):`,
                 ...(result.semantic_result.matched_skills?.length > 0 
                     ? result.semantic_result.matched_skills.map((skill: string) => ` ${skill}`)
@@ -105,14 +112,14 @@ export default function AnalyzePage() {
                 ...(result.semantic_result.missing_skills?.length > 0
                     ? result.semantic_result.missing_skills.map((skill: string) => ` Consider adding ${skill}`)
                     : ["No missing skills - Great job!"])
-            ] : ["Upload resume and job description to see skill analysis"]
+            ] : ["Please provide both resume and job description to analyze skill gaps"]
         },
         {
             id: "improve",
             title: "Resume Improvements",
             description: "Get actionable suggestions to enhance your resume",
             icon: "🚀",
-            content: result?.semantic_result ? [
+            content: result?.semantic_result && jobDescription ? [
                 `📊 Overall Match Score: ${result.semantic_result.overall_match_score}%`,
                 `🧠 Semantic Score: ${result.semantic_result.semantic_score}%`,
                 `💼 Skill Score: ${result.semantic_result.skill_score}%`,
@@ -124,25 +131,26 @@ export default function AnalyzePage() {
                 result.semantic_result.missing_skills?.length > 0
                     ? `🎯 Areas to Improve: ${result.semantic_result.missing_skills.join(', ')}`
                     : ""
-            ] : ["Upload resume and job description to see detailed analysis"]
+            ] : ["Please provide both resume and job description to get improvement suggestions"]
         },
         {
             id: "correct",
             title: "Resume Correction",
             description: "Fix mistakes and download corrected resume",
             icon: "🔧",
-            content: result?.semantic_result ? [
+            content: result?.semantic_result && jobDescription ? [
                 `⚠️ Issues Found: ${result.semantic_result.ats_issues?.length || 0}`,
                 `📚 Missing Skills: ${result.semantic_result.missing_skills?.length || 0}`,
                 `✨ Improvements: ${result.semantic_result.improvements?.length || 0}`,
                 "",
                 "Click to view detailed corrections and download fixed resume"
-            ] : ["Analyze resume to identify and fix mistakes"]
+            ] : ["Please provide both resume and job description to identify and fix mistakes"]
         }
     ];
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
+        <>
+            <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
             {/* Navigation */}
             <Navigation />
             {/* Background Doodles */}
@@ -428,7 +436,7 @@ export default function AnalyzePage() {
                                         </div>
 
                                         {/* View Details Button */}
-                                        {result && activeSection === card.id && (
+                                        {result && jobDescription && activeSection === card.id && (
                                             <button 
                                                 onClick={() => router.push('/correct')}
                                                 className="mt-4 w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-2 rounded-lg hover:from-blue-600 hover:to-purple-600 transition-colors text-sm font-medium shadow-md"
@@ -444,5 +452,7 @@ export default function AnalyzePage() {
                 </div>
             </div>
         </div>
+            {SnackbarComponent}
+        </>
     );
 }
