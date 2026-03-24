@@ -4,7 +4,10 @@ import { Inter } from 'next/font/google'
 import React from 'react'
 import { AuthProvider } from '../contexts/AuthContext'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ 
+  subsets: ['latin'],
+  variable: '--font-inter'
+})
 
 export const metadata: Metadata = {
   title: 'ResumeAI - AI Resume Analyzer',
@@ -17,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={inter.variable}>
       <body className={inter.className}>
         <AuthProvider>
           {children}

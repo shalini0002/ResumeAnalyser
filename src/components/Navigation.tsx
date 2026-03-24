@@ -28,6 +28,15 @@ export default function Navigation() {
           
           {/* Navigation Items */}
           <div className="flex items-center space-x-4">
+            {/* Jobs Link - Only show when authenticated */}
+            {isAuthenticated && (
+              <a
+                href="/jobs"
+                className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              >
+                Jobs
+              </a>
+            )}
             {isAuthenticated ? (
               <>
                 {/* User Info */}
