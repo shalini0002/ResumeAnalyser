@@ -19,26 +19,20 @@ export default function AnalyzePage() {
 
     // Load saved resume score and analysis results from localStorage/sessionStorage on component mount
     useEffect(() => {
-        const savedScore = localStorage.getItem('resumeScore');
-        const savedResult = sessionStorage.getItem('analysisResult');
         const savedResumeText = localStorage.getItem('resumeText') || sessionStorage.getItem('resumeText');
         const savedJobDescription = sessionStorage.getItem('jobDescription');
+        const savedResult = sessionStorage.getItem('analysisResult');
+        const savedResumeScore = localStorage.getItem('resumeScore');
         
-        if (savedScore) {
-            setResumeScore(parseInt(savedScore));
-        }
+        if (savedResumeText) setResumeText(savedResumeText);
+        // Don't load JD automatically - keep it empty until user pastes it
+        if (savedResumeScore) setResumeScore(parseInt(savedResumeScore)); // Load resume score
         
-        if (savedResumeText) {
-            setResumeText(savedResumeText);
-        }
-        
-        if (savedJobDescription) {
-            setJobDescription(savedJobDescription);
-        }
-        
-        if (savedResult && savedJobDescription && savedResumeText) {
+        // Only load results if all data exists and user has actually analyzed
+        if (savedJobDescription && savedResumeText && savedResult) {
             try {
-                setResult(JSON.parse(savedResult));
+                const parsedResult = JSON.parse(savedResult);
+                setResult(parsedResult);
             } catch (error) {
                 console.error('Error parsing saved result:', error);
             }
@@ -359,7 +353,7 @@ export default function AnalyzePage() {
                                 </div>
 
                                 {/* Analyze Button - Sketchy Style */}
-                                <div className="flex justify-center">
+                                <div className="flex justify-center gap-4">
                                     <button
                                         onClick={handleAnalyze}
                                         disabled={loading}
@@ -382,72 +376,93 @@ export default function AnalyzePage() {
                                             )}
                                         </span>
                                     </button>
+                                    
+                                    {/* Only show Find Matching Jobs button after user has clicked analyze */}
+                                    {result && jobDescription && (
+                                        <button
+                                            onClick={() => router.push('/jobs')}
+                                            disabled={!resumeText}
+                                            className="relative px-8 py-3 bg-gradient-to-r from-green-600 to-teal-600 text-white font-bold rounded-lg transform rotate-1 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 disabled:from-gray-400 disabled:to-gray-500 disabled:scale-100"
+                                        >
+                                            {/* Button sketchy effect */}
+                                            <div className="absolute inset-0 border-2 border-gray-800 rounded-lg transform scale-105 pointer-events-none"></div>
+                                            
+                                            <span className="relative">
+                                                <span className="flex items-center">
+                                                    <span className="mr-2">💼</span>
+                                                    Find Matching Jobs
+                                                </span>
+                                            </span>
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </div>
 
-                        {/* Analysis Cards - Sketchy Paper Style */}
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            {analysisCards.map((card) => (
-                                <div
-                                    key={card.id}
-                                    className={`bg-white rounded-lg shadow-xl border-2 border-gray-200 p-6 relative transition-all duration-300 hover:shadow-2xl hover:scale-102 ${
-                                        activeSection === card.id ? 'ring-4 ring-blue-400 ring-opacity-50' : ''
-                                    }`}
-                                >
-                                    {/* Card paper texture */}
-                                    <div className="absolute inset-0 opacity-5 rounded-lg">
-                                        <div className="h-full w-full rounded-lg" style={{ 
-                                            backgroundImage: `repeating-linear-gradient(
-                                                45deg,
-                                                transparent,
-                                                transparent 1px,
-                                                rgba(0,0,0,0.01) 1px,
-                                                rgba(0,0,0,0.01) 2px
-                                            )`
-                                        }}></div>
-                                    </div>
-                                    
-                                    <div className="relative">
-                                        {/* Card header with doodle */}
-                                        <div className="flex items-center mb-4">
-                                            <span className="text-3xl mr-3">{card.icon}</span>
-                                            <div>
-                                                <h3 className="text-lg font-bold text-gray-800">{card.title}</h3>
-                                                <p className="text-xs text-gray-600">{card.description}</p>
-                                            </div>
+                        {/* Analysis Cards - Sketchy Paper Style - Only show after analysis */}
+                        {result && jobDescription && (
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                {analysisCards.map((card) => (
+                                    <div
+                                        key={card.id}
+                                        className={`bg-white rounded-lg shadow-xl border-2 border-gray-200 p-6 relative transition-all duration-300 hover:shadow-2xl hover:scale-102 ${
+                                            activeSection === card.id ? 'ring-4 ring-blue-400 ring-opacity-50' : ''
+                                        }`}
+                                    >
+                                        {/* Card paper texture */}
+                                        <div className="absolute inset-0 opacity-5 rounded-lg">
+                                            <div className="h-full w-full rounded-lg" style={{ 
+                                                backgroundImage: `repeating-linear-gradient(
+                                                    45deg,
+                                                    transparent,
+                                                    transparent 1px,
+                                                    rgba(0,0,0,0.01) 1px,
+                                                    rgba(0,0,0,0.01) 2px
+                                                )`
+                                            }}></div>
                                         </div>
                                         
-                                        {/* Doodle element */}
-                                        <div className="absolute -top-2 -right-2 w-6 h-6 border-2 border-yellow-300 rounded-full transform rotate-12 opacity-60"></div>
-                                        
-                                        {/* Card content */}
-                                        <div className="text-sm text-gray-700 space-y-1">
-                                            {Array.isArray(card.content) ? (
-                                                card.content.map((item, index) => (
-                                                    <div key={index} className="flex items-start">
-                                                        <span className="text-gray-500 mr-2">{item.startsWith('•') || item.startsWith('✅') || item.startsWith('❌') || item.startsWith('📊') || item.startsWith('🧠') || item.startsWith('💼') || item.startsWith('📋') || item.startsWith('✨') || item.startsWith('🎯') ? '' : '•'}</span>
-                                                        <span className="flex-1">{item.replace(/^[•✅❌📊🧠💼📋✨🎯]\s*/, '')}</span>
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <div className="text-gray-600 italic">{card.content}</div>
+                                        <div className="relative">
+                                            {/* Card header with doodle */}
+                                            <div className="flex items-center mb-4">
+                                                <span className="text-3xl mr-3">{card.icon}</span>
+                                                <div>
+                                                    <h3 className="text-lg font-bold text-gray-800">{card.title}</h3>
+                                                    <p className="text-xs text-gray-600">{card.description}</p>
+                                                </div>
+                                            </div>
+                                            
+                                            {/* Doodle element */}
+                                            <div className="absolute -top-2 -right-2 w-6 h-6 border-2 border-yellow-300 rounded-full transform rotate-12 opacity-60"></div>
+                                            
+                                            {/* Card content */}
+                                            <div className="text-sm text-gray-700 space-y-1">
+                                                {Array.isArray(card.content) ? (
+                                                    card.content.map((item, index) => (
+                                                        <div key={index} className="flex items-start">
+                                                            <span className="text-gray-500 mr-2">{item.startsWith('•') || item.startsWith('✅') || item.startsWith('❌') || item.startsWith('📊') || item.startsWith('🧠') || item.startsWith('💼') || item.startsWith('📋') || item.startsWith('✨') || item.startsWith('🎯') ? '' : '•'}</span>
+                                                            <span className="flex-1">{item.replace(/^[•✅❌📊🧠💼📋✨🎯]\s*/, '')}</span>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <div className="text-gray-600 italic">{card.content}</div>
+                                                )}
+                                            </div>
+
+                                            {/* View Details Button */}
+                                            {result && jobDescription && activeSection === card.id && (
+                                                <button 
+                                                    onClick={() => router.push('/correct')}
+                                                    className="mt-4 w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-2 rounded-lg hover:from-blue-600 hover:to-purple-600 transition-colors text-sm font-medium shadow-md"
+                                                >
+                                                    Fix Mistakes & Download
+                                                </button>
                                             )}
                                         </div>
-
-                                        {/* View Details Button */}
-                                        {result && jobDescription && activeSection === card.id && (
-                                            <button 
-                                                onClick={() => router.push('/correct')}
-                                                className="mt-4 w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-2 rounded-lg hover:from-blue-600 hover:to-purple-600 transition-colors text-sm font-medium shadow-md"
-                                            >
-                                                Fix Mistakes & Download
-                                            </button>
-                                        )}
                                     </div>
-                                </div>
-                            ))}
-                        </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
