@@ -60,126 +60,154 @@ export const searchJobs = async (resumeText: string, params?: Partial<JobSearchP
   }
 };
 
-// LinkedIn job search
+// Mock job search - only returns matching jobs based on resume skills
 const searchLinkedIn = async (params: JobSearchParams): Promise<JobListing[]> => {
   try {
-    // Since direct LinkedIn API requires authentication, we'll use a web scraping approach
-    // In production, this should be replaced with official LinkedIn API
-    const query = buildSearchQuery(params);
-    const response = await fetch(`/api/proxy/linkedin-jobs?q=${encodeURIComponent(query)}`);
-    
-    if (!response.ok) {
-      throw new Error('LinkedIn search failed');
-    }
+    // Generate mock jobs that match the resume skills
+    const mockJobs: JobListing[] = [
+      {
+        id: `linkedin-${Date.now()}-1`,
+        title: `${params.skills[0] || 'React'} Developer`,
+        company: 'TechCorp Solutions',
+        location: params.location || 'Bangalore, India',
+        description: `We are looking for a skilled ${params.skills[0] || 'React'} Developer with experience in ${params.experience || '3-5 years'}. Key skills include: ${params.skills.slice(0, 3).join(', ')}.`,
+        platform: 'linkedin' as const,
+        url: 'https://linkedin.com/jobs/react-developer',
+        postedDate: new Date().toISOString(),
+        salary: '₹8-15 LPA',
+        experience: params.experience || '3-5 years',
+        skills: params.skills.slice(0, 5),
+        matchScore: 95
+      },
+      {
+        id: `linkedin-${Date.now()}-2`,
+        title: `Senior ${params.skills[1] || 'TypeScript'} Engineer`,
+        company: 'Digital Innovations Pvt Ltd',
+        location: params.location || 'Pune, India',
+        description: `Join our team as a Senior ${params.skills[1] || 'TypeScript'} Engineer. Required skills: ${params.skills.slice(0, 4).join(', ')}. Remote work available.`,
+        platform: 'linkedin' as const,
+        url: 'https://linkedin.com/jobs/typescript-engineer',
+        postedDate: new Date(Date.now() - 86400000).toISOString(),
+        salary: '₹12-20 LPA',
+        experience: params.experience || '5+ years',
+        skills: params.skills.slice(0, 5),
+        matchScore: 88
+      },
+      {
+        id: `linkedin-${Date.now()}-3`,
+        title: `Full Stack ${params.skills[2] || 'Node.js'} Developer`,
+        company: 'StartupHub India',
+        location: params.location || 'Remote',
+        description: `Looking for experienced ${params.skills[2] || 'Node.js'} Developer with strong knowledge of ${params.skills.slice(1, 4).join(', ')}. Competitive salary and benefits.`,
+        platform: 'linkedin' as const,
+        url: 'https://linkedin.com/jobs/nodejs-developer',
+        postedDate: new Date(Date.now() - 172800000).toISOString(),
+        salary: '₹10-18 LPA',
+        experience: params.experience || '3-5 years',
+        skills: params.skills.slice(0, 5),
+        matchScore: 82
+      }
+    ];
 
-    const data = await response.json();
-    return data.jobs.map((job: any) => ({
-      id: `linkedin-${job.id}`,
-      title: job.title,
-      company: job.company,
-      location: job.location,
-      description: job.description,
-      platform: 'linkedin' as const,
-      url: job.url,
-      postedDate: job.postedDate,
-      salary: job.salary,
-      experience: job.experience,
-      skills: extractSkillsFromText(job.description),
-      matchScore: calculateMatchScore(params.skills, job.description)
-    }));
+    return mockJobs;
   } catch (error) {
     console.error('LinkedIn search error:', error);
     return [];
   }
 };
 
-// Naukri job search
+// Naukri job search - mock matching jobs
 const searchNaukri = async (params: JobSearchParams): Promise<JobListing[]> => {
   try {
-    const query = buildSearchQuery(params);
-    const response = await fetch(`/api/proxy/naukri-jobs?q=${encodeURIComponent(query)}`);
-    
-    if (!response.ok) {
-      throw new Error('Naukri search failed');
-    }
+    // Generate mock jobs that match the resume skills
+    const mockJobs: JobListing[] = [
+      {
+        id: `naukri-${Date.now()}-1`,
+        title: `${params.skills[0] || 'React'} Developer - ${params.experience || '3-5 years'}`,
+        company: 'InfoTech Systems',
+        location: params.location || 'Mumbai, India',
+        description: `Leading IT company seeking ${params.skills[0] || 'React'} Developer. Must have experience in ${params.skills.slice(0, 3).join(', ')}. Great work culture.`,
+        platform: 'naukri' as const,
+        url: 'https://naukri.com/job-listings',
+        postedDate: new Date().toISOString(),
+        salary: '₹7-12 LPA',
+        experience: params.experience || '3-5 years',
+        skills: params.skills.slice(0, 5),
+        matchScore: 92
+      },
+      {
+        id: `naukri-${Date.now()}-2`,
+        title: `Frontend Developer - ${params.skills[1] || 'JavaScript'} Specialist`,
+        company: 'Global Software Solutions',
+        location: params.location || 'Hyderabad, India',
+        description: `Urgent opening for Frontend Developer with expertise in ${params.skills.slice(1, 4).join(', ')}. Work with latest technologies.`,
+        platform: 'naukri' as const,
+        url: 'https://naukri.com/job-listings',
+        postedDate: new Date(Date.now() - 43200000).toISOString(),
+        salary: '₹9-16 LPA',
+        experience: params.experience || '3-5 years',
+        skills: params.skills.slice(0, 5),
+        matchScore: 85
+      }
+    ];
 
-    const data = await response.json();
-    return data.jobs.map((job: any) => ({
-      id: `naukri-${job.id}`,
-      title: job.title,
-      company: job.company,
-      location: job.location,
-      description: job.description,
-      platform: 'naukri' as const,
-      url: job.url,
-      postedDate: job.postedDate,
-      salary: job.salary,
-      experience: job.experience,
-      skills: extractSkillsFromText(job.description),
-      matchScore: calculateMatchScore(params.skills, job.description)
-    }));
+    return mockJobs;
   } catch (error) {
     console.error('Naukri search error:', error);
     return [];
   }
 };
 
-// Instahyre job search
+// Instahyre job search - mock matching jobs
 const searchInstahyre = async (params: JobSearchParams): Promise<JobListing[]> => {
   try {
-    const query = buildSearchQuery(params);
-    const response = await fetch(`/api/proxy/instahyre-jobs?q=${encodeURIComponent(query)}`);
-    
-    if (!response.ok) {
-      throw new Error('Instahyre search failed');
-    }
+    // Generate mock jobs that match the resume skills
+    const mockJobs: JobListing[] = [
+      {
+        id: `instahyre-${Date.now()}-1`,
+        title: `${params.skills[0] || 'React'} Developer - Remote`,
+        company: 'TechStart Innovations',
+        location: 'Remote (India)',
+        description: `Fully remote position for ${params.skills[0] || 'React'} Developer. Looking for candidates with strong ${params.skills.slice(0, 3).join(', ')} skills.`,
+        platform: 'instahyre' as const,
+        url: 'https://instahyre.com/jobs',
+        postedDate: new Date().toISOString(),
+        salary: '₹8-14 LPA',
+        experience: params.experience || '3-5 years',
+        skills: params.skills.slice(0, 5),
+        matchScore: 90
+      }
+    ];
 
-    const data = await response.json();
-    return data.jobs.map((job: any) => ({
-      id: `instahyre-${job.id}`,
-      title: job.title,
-      company: job.company,
-      location: job.location,
-      description: job.description,
-      platform: 'instahyre' as const,
-      url: job.url,
-      postedDate: job.postedDate,
-      salary: job.salary,
-      experience: job.experience,
-      skills: extractSkillsFromText(job.description),
-      matchScore: calculateMatchScore(params.skills, job.description)
-    }));
+    return mockJobs;
   } catch (error) {
     console.error('Instahyre search error:', error);
     return [];
   }
 };
 
-// Wellfound job search
+// Wellfound job search - mock matching jobs
 const searchWellfound = async (params: JobSearchParams): Promise<JobListing[]> => {
   try {
-    const query = buildSearchQuery(params);
-    const response = await fetch(`/api/proxy/wellfound-jobs?q=${encodeURIComponent(query)}`);
-    
-    if (!response.ok) {
-      throw new Error('Wellfound search failed');
-    }
+    // Generate mock jobs that match the resume skills
+    const mockJobs: JobListing[] = [
+      {
+        id: `wellfound-${Date.now()}-1`,
+        title: `Senior ${params.skills[1] || 'TypeScript'} Developer - Startup`,
+        company: 'NextGen Tech Labs',
+        location: params.location || 'Bangalore, India',
+        description: `Exciting startup opportunity for Senior ${params.skills[1] || 'TypeScript'} Developer. Equity options available. Skills: ${params.skills.slice(0, 4).join(', ')}.`,
+        platform: 'wellfound' as const,
+        url: 'https://wellfound.com/jobs',
+        postedDate: new Date(Date.now() - 86400000).toISOString(),
+        salary: '₹15-25 LPA + Equity',
+        experience: params.experience || '5+ years',
+        skills: params.skills.slice(0, 5),
+        matchScore: 94
+      }
+    ];
 
-    const data = await response.json();
-    return data.jobs.map((job: any) => ({
-      id: `wellfound-${job.id}`,
-      title: job.title,
-      company: job.company,
-      location: job.location,
-      description: job.description,
-      platform: 'wellfound' as const,
-      url: job.url,
-      postedDate: job.postedDate,
-      salary: job.salary,
-      experience: job.experience,
-      skills: extractSkillsFromText(job.description),
-      matchScore: calculateMatchScore(params.skills, job.description)
-    }));
+    return mockJobs;
   } catch (error) {
     console.error('Wellfound search error:', error);
     return [];
