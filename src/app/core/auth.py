@@ -14,23 +14,17 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 # Password hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__truncate_error=False)
 
 class AuthManager:
     @staticmethod
     def verify_password(plain_password: str, hashed_password: str) -> bool:
         """Verify a password against its hash"""
-        # Truncate password to 72 characters if longer (bcrypt limitation)
-        if len(plain_password) > 72:
-            plain_password = plain_password[:72]
         return pwd_context.verify(plain_password, hashed_password)
     
     @staticmethod
     def get_password_hash(password: str) -> str:
-        """Hash a password"""
-        # Truncate password to 72 characters if longer (bcrypt limitation)
-        if len(password) > 72:
-            password = password[:72]
+        """Hash a password with bcrypt"""
         return pwd_context.hash(password)
     
     @staticmethod

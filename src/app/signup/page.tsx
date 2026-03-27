@@ -34,7 +34,7 @@ export default function SignupPage() {
       
       // Auto-login after successful registration
       await AuthService.login({ email, password });
-      router.push('/analyze');
+      router.push('/'); // Redirect to home page
     } catch (err: any) {
       setError(err.message);
     } finally {
