@@ -16,27 +16,19 @@ export default function AnalyzePage() {
     const [loading, setLoading] = useState(false);
     const [activeSection, setActiveSection] = useState("skill-gap");
     const [resumeScore, setResumeScore] = useState<number | null>(null);
+    const [hasAnalyzed, setHasAnalyzed] = useState(false); // Track if user has clicked analyze
 
     // Load saved resume score and analysis results from localStorage/sessionStorage on component mount
     useEffect(() => {
         const savedResumeText = localStorage.getItem('resumeText') || sessionStorage.getItem('resumeText');
         const savedJobDescription = sessionStorage.getItem('jobDescription');
-        const savedResult = sessionStorage.getItem('analysisResult');
         const savedResumeScore = localStorage.getItem('resumeScore');
         
         if (savedResumeText) setResumeText(savedResumeText);
         // Don't load JD automatically - keep it empty until user pastes it
         if (savedResumeScore) setResumeScore(parseInt(savedResumeScore)); // Load resume score
         
-        // Only load results if all data exists and user has actually analyzed
-        if (savedJobDescription && savedResumeText && savedResult) {
-            try {
-                const parsedResult = JSON.parse(savedResult);
-                setResult(parsedResult);
-            } catch (error) {
-                console.error('Error parsing saved result:', error);
-            }
-        }
+        // Don't load previous results automatically - user must click analyze button
     }, []);
 
     // Save analysis results to sessionStorage when they change
@@ -75,6 +67,7 @@ export default function AnalyzePage() {
         try {
             const data = await analyzeJD(resumeText, jobDescription);
             setResult(data);
+            setHasAnalyzed(true); // Mark that user has clicked analyze
             // Update resume score from analysis if not already set
             if (!resumeScore) {
                 const score = data.ats_score || data.semantic_result?.ats_score;
@@ -83,7 +76,7 @@ export default function AnalyzePage() {
             }
             showSnackbar('Analysis completed successfully!', 'success');
         } catch (error) {
-            console.error("Analysis failed:", error);
+            console.error('Analysis error:', error);
             showSnackbar('Analysis failed. Please try again.', 'error');
         } finally {
             setLoading(false);
@@ -378,7 +371,7 @@ export default function AnalyzePage() {
                                     </button>
                                     
                                     {/* Only show Find Matching Jobs button after user has clicked analyze */}
-                                    {result && jobDescription && (
+                                    {hasAnalyzed && result && jobDescription && (
                                         <button
                                             onClick={() => router.push('/jobs')}
                                             disabled={!resumeText}
@@ -400,7 +393,7 @@ export default function AnalyzePage() {
                         </div>
 
                         {/* Analysis Cards - Sketchy Paper Style - Only show after analysis */}
-                        {result && jobDescription && (
+                        {hasAnalyzed && result && jobDescription && (
                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                 {analysisCards.map((card) => (
                                     <div
