@@ -93,80 +93,150 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
       {/* Navigation */}
       <Navigation />
       
+      {/* Background Doodles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-10 left-10 w-20 h-20 border-2 border-blue-300 rounded-full opacity-20 transform rotate-12"></div>
+        <div className="absolute top-40 right-20 w-16 h-16 border-2 border-purple-300 rounded-lg opacity-15 transform -rotate-6"></div>
+        <div className="absolute bottom-20 left-20 w-24 h-12 border-2 border-green-300 rounded-full opacity-10 transform rotate-45"></div>
+        <div className="absolute top-60 left-40 w-12 h-12 border-2 border-yellow-300 rounded opacity-25"></div>
+        <div className="absolute bottom-40 right-10 w-32 h-8 border-2 border-pink-300 rounded-full opacity-20 transform -rotate-12"></div>
+        <div className="absolute top-80 right-40 w-8 h-8 bg-blue-200 rounded-full opacity-10"></div>
+        <div className="absolute bottom-60 left-60 w-16 h-16 border-2 border-indigo-300 transform rotate-45 opacity-15"></div>
+      </div>
+      
       {/* Main Content */}
-      <div className="flex flex-col lg:flex-row min-h-screen pt-16">
-        {/* Left Section - AI Resume App Info */}
+      <div className="relative z-10 flex flex-col lg:flex-row min-h-screen pt-16">
+        {/* Left Section - AI Resume App Info - Sketchy Paper Style */}
         <div className="lg:w-1/2 flex items-center justify-center p-6 sm:p-8 lg:p-12">
-          <div className="max-w-lg w-full">
-            <div className="mb-8">
-              <div className="flex items-center mb-6">
-                <div className="h-10 w-10 sm:h-12 sm:w-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-                  <span className="text-white font-bold text-xl sm:text-2xl">R</span>
-                </div>
-                <span className="ml-3 sm:ml-4 text-2xl sm:text-3xl font-bold text-gray-900">ResumeAI</span>
-              </div>
-              
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-                AI-Powered Resume Analysis
-              </h1>
-              
-              <p className="text-lg sm:text-xl text-gray-600 mb-8">
-                Transform your resume with intelligent ATS optimization and personalized insights
-              </p>
+          <div className="max-w-lg w-full bg-white rounded-2xl shadow-2xl border-4 border-gray-200 p-8 relative">
+            {/* Paper Texture Background */}
+            <div className="absolute inset-0 opacity-5 rounded-2xl">
+              <div className="h-full w-full rounded-2xl" style={{ 
+                backgroundImage: `repeating-linear-gradient(
+                  45deg,
+                  transparent,
+                  transparent 1px,
+                  rgba(0,0,0,0.01) 1px,
+                  rgba(0,0,0,0.01) 2px
+                )`
+              }}></div>
             </div>
+            
+            {/* Doodle element */}
+            <div className="absolute -top-2 -right-2 w-6 h-6 border-2 border-yellow-300 rounded-full transform rotate-12 opacity-60"></div>
+            
+            <div className="relative">
+              <div className="mb-8">
+                <div className="flex items-center mb-6">
+                  <div className="h-12 w-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center border-2 border-gray-800 transform -rotate-1">
+                    <span className="text-white font-bold text-2xl">R</span>
+                  </div>
+                  <span className="ml-4 text-3xl font-bold text-gray-800 relative">
+                    ResumeAI
+                    <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gray-800 transform -skew-x-12"></div>
+                  </span>
+                </div>
+                
+                <h1 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-4 relative">
+                  <span className="relative">
+                    AI-Powered Resume Analysis
+                    <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gray-800 transform -skew-x-12"></div>
+                  </span>
+                </h1>
+                
+                <p className="text-xl text-gray-700 mb-8">
+                  Transform your resume with intelligent ATS optimization and personalized insights
+                </p>
+              </div>
 
-            <div className="space-y-4 sm:space-y-6">
-              <div className="flex items-start space-x-3 sm:space-x-4">
-                <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <span className="text-blue-600 text-sm sm:text-base">📊</span>
+            <div className="space-y-6">
+              <div className="flex items-start space-x-4 bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl border-2 border-gray-200 transform -rotate-1">
+                <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center border-2 border-gray-800">
+                  <span className="text-blue-600 text-lg">📊</span>
                 </div>
                 <div>
-                  <h3 className="text-base sm:text-lg font-semibold text-gray-900">ATS Score Analysis</h3>
-                  <p className="text-gray-600 text-sm sm:text-base">Get instant feedback on your resume's compatibility with Applicant Tracking Systems</p>
+                  <h3 className="text-lg font-bold text-gray-800 relative">
+                    <span className="relative">
+                      ATS Score Analysis
+                      <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gray-800 transform -skew-x-12"></div>
+                    </span>
+                  </h3>
+                  <p className="text-gray-700 text-sm">Get instant feedback on your resume's compatibility with Applicant Tracking Systems</p>
                 </div>
               </div>
 
-              <div className="flex items-start space-x-3 sm:space-x-4">
-                <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                  <span className="text-green-600 text-sm sm:text-base">🎯</span>
+              <div className="flex items-start space-x-4 bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-xl border-2 border-gray-200 transform rotate-1">
+                <div className="flex-shrink-0 w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center border-2 border-gray-800">
+                  <span className="text-green-600 text-lg">🎯</span>
                 </div>
                 <div>
-                  <h3 className="text-base sm:text-lg font-semibold text-gray-900">Job Matching</h3>
-                  <p className="text-gray-600 text-sm sm:text-base">Compare your resume against specific job descriptions for better alignment</p>
+                  <h3 className="text-lg font-bold text-gray-800 relative">
+                    <span className="relative">
+                      Job Matching
+                      <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gray-800 transform -skew-x-12"></div>
+                    </span>
+                  </h3>
+                  <p className="text-gray-700 text-sm">Compare your resume against specific job descriptions for better alignment</p>
                 </div>
               </div>
 
-              <div className="flex items-start space-x-3 sm:space-x-4">
-                <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <span className="text-purple-600 text-sm sm:text-base">✨</span>
+              <div className="flex items-start space-x-4 bg-gradient-to-r from-purple-50 to-pink-50 p-4 rounded-xl border-2 border-gray-200 transform -rotate-1">
+                <div className="flex-shrink-0 w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center border-2 border-gray-800">
+                  <span className="text-purple-600 text-lg">✨</span>
                 </div>
                 <div>
-                  <h3 className="text-base sm:text-lg font-semibold text-gray-900">AI Suggestions</h3>
-                  <p className="text-gray-600 text-sm sm:text-base">Receive intelligent recommendations to improve your resume content</p>
+                  <h3 className="text-lg font-bold text-gray-800 relative">
+                    <span className="relative">
+                      AI Suggestions
+                      <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gray-800 transform -skew-x-12"></div>
+                    </span>
+                  </h3>
+                  <p className="text-gray-700 text-sm">Receive intelligent recommendations to improve your resume content</p>
                 </div>
               </div>
+            </div>
             </div>
           </div>
         </div>
 
-        {/* Right Section - Upload Functionality */}
-        <div className="lg:w-1/2 bg-white flex items-center justify-center p-6 sm:p-8 lg:p-12">
-          <div className="max-w-md w-full">
-            <div className="text-center mb-6 sm:mb-8">
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                Analyze Your Resume
-              </h2>
-              <p className="text-gray-600 text-sm sm:text-base">
-                Upload your resume to get instant ATS score and insights
-              </p>
+        {/* Right Section - Upload Functionality - Sketchy Style */}
+        <div className="lg:w-1/2 flex items-center justify-center p-6 sm:p-8 lg:p-12">
+          <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl border-4 border-gray-200 p-8 relative">
+            {/* Paper Texture Background */}
+            <div className="absolute inset-0 opacity-5 rounded-2xl">
+              <div className="h-full w-full rounded-2xl" style={{ 
+                backgroundImage: `repeating-linear-gradient(
+                  45deg,
+                  transparent,
+                  transparent 1px,
+                  rgba(0,0,0,0.01) 1px,
+                  rgba(0,0,0,0.01) 2px
+                )`
+              }}></div>
             </div>
+            
+            {/* Doodle element */}
+            <div className="absolute -top-2 -left-2 w-6 h-6 border-2 border-green-300 rounded-full transform rotate-45 opacity-60"></div>
+            
+            <div className="relative">
+              <div className="text-center mb-8">
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2 relative">
+                  <span className="relative">
+                    Analyze Your Resume
+                    <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gray-800 transform -skew-x-12"></div>
+                  </span>
+                </h2>
+                <p className="text-gray-700 text-sm">
+                  Upload your resume to get instant ATS score and insights
+                </p>
+              </div>
 
-            {/* Upload Area */}
-            <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 sm:p-8 text-center hover:border-blue-500 transition-colors">
+            {/* Upload Area - Sketchy Style */}
+            <div className="border-4 border-dashed border-gray-300 rounded-2xl p-6 sm:p-8 text-center hover:border-blue-500 transition-colors bg-gradient-to-r from-gray-50 to-blue-50 transform -rotate-1">
               <input
                 type="file"
                 id="resume-upload"
@@ -181,59 +251,83 @@ export default function Dashboard() {
                 className="cursor-pointer block"
               >
                 <div className="mb-4">
-                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
-                    <span className="text-xl sm:text-2xl">📄</span>
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto border-4 border-gray-800 transform rotate-12">
+                    <span className="text-2xl sm:text-3xl">📄</span>
                   </div>
                 </div>
                 
-                <p className="text-base sm:text-lg font-medium text-gray-900 mb-2">
-                  {uploading ? 'Analyzing...' : 'Choose your resume'}
+                <p className="text-lg font-medium text-gray-800 mb-2 relative">
+                  <span className="relative">
+                    {uploading ? 'Analyzing...' : 'Choose your resume'}
+                    <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gray-800 transform -skew-x-12"></div>
+                  </span>
                 </p>
                 
-                <p className="text-xs sm:text-sm text-gray-500">
+                <p className="text-sm text-gray-600">
                   PDF, DOC, DOCX (Max 10MB)
                 </p>
               </label>
             </div>
 
-            {/* ATS Score Display */}
+            {/* ATS Score Display - Sketchy Style */}
             {atsScore !== null && (
-              <div className="mt-6 sm:mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 sm:p-6">
-                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
-                  Your ATS Score
+              <div className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border-4 border-gray-200 transform rotate-1 shadow-lg">
+                <h3 className="text-lg font-bold text-gray-800 mb-4 relative">
+                  <span className="relative">
+                    Your ATS Score
+                    <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gray-800 transform -skew-x-12"></div>
+                  </span>
                 </h3>
                 
                 <div className="flex items-center justify-center mb-4">
                   <div className="relative">
-                    <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-6 sm:border-8 border-gray-200"></div>
-                    <div 
-                      className="absolute inset-0 w-24 h-24 sm:w-32 sm:h-32 rounded-full border-6 sm:border-8 border-blue-500 border-t-transparent border-r-transparent transform -rotate-45"
-                      style={{
-                        clipPath: `polygon(50% 50%, 50% 0%, ${50 + 50 * Math.cos((atsScore - 90) * Math.PI / 180)}% ${50 + 50 * Math.sin((atsScore - 90) * Math.PI / 180)}%, 50% 50%)`
-                      }}
-                    ></div>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-2xl sm:text-3xl font-bold text-gray-900">{atsScore}%</span>
+                    <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-8 border-gray-200 relative overflow-hidden shadow-lg">
+                      {/* Sketchy circle effect */}
+                      <div className="absolute inset-0 border-4 border-gray-600 rounded-full transform scale-95"></div>
+                      
+                      {/* Progress arc */}
+                      <div 
+                        className="absolute inset-0 border-8 border-transparent border-t-blue-500 border-r-blue-500 transform -rotate-45 transition-all duration-1000 ease-out"
+                        style={{
+                          clipPath: `polygon(50% 50%, 50% 0%, ${50 + 50 * Math.cos((atsScore - 90) * Math.PI / 180)}% ${50 + 50 * Math.sin((atsScore - 90) * Math.PI / 180)}%, 50% 50%)`
+                        }}
+                      ></div>
+                      
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-2xl sm:text-3xl font-bold text-gray-800">{atsScore}%</span>
+                      </div>
                     </div>
+                    
+                    {/* Doodle elements around score */}
+                    <div className="absolute -top-2 -right-2 w-6 h-6 border-2 border-yellow-400 rounded-full animate-pulse"></div>
+                    <div className="absolute -bottom-1 -left-1 w-4 h-4 border-2 border-green-400 transform rotate-45"></div>
                   </div>
                 </div>
                 
                 <div className="space-y-2">
-                  <div className="flex justify-between text-xs sm:text-sm">
-                    <span className="text-gray-600">Status:</span>
-                    <span className={`font-medium ${atsScore >= 80 ? 'text-green-600' : atsScore >= 60 ? 'text-yellow-600' : 'text-red-600'}`}>
-                      {atsScore >= 80 ? 'Excellent' : atsScore >= 60 ? 'Good' : 'Needs Improvement'}
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-700 font-medium">Status:</span>
+                    <span className={`font-bold ${
+                      atsScore >= 80 ? 'text-green-700' : 
+                      atsScore >= 60 ? 'text-yellow-700' : 'text-red-700'
+                    }`}>
+                      {atsScore >= 80 ? '🌟 Excellent' : 
+                       atsScore >= 60 ? '👍 Good' : '⚡ Needs Work'}
                     </span>
                   </div>
                 </div>
                 <button 
                   onClick={handleViewAnalysis}
-                  className="w-full mt-4 sm:mt-6 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition-colors text-sm sm:text-base"
+                  className="w-full mt-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-3 px-4 rounded-xl border-2 border-gray-800 transform -rotate-1 shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-base"
                 >
-                  View Detailed Analysis
+                  <span className="relative">
+                    View Detailed Analysis
+                    <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-white transform -skew-x-12"></div>
+                  </span>
                 </button>
               </div>
             )}
+            </div>
           </div>
         </div>
       </div>
