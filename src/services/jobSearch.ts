@@ -28,14 +28,21 @@ export const searchJobs = async (resumeText: string, params?: Partial<JobSearchP
   const resumeSkills = extractSkillsFromResume(resumeText);
   const experience = extractExperienceFromResume(resumeText);
   
+  console.log('Resume skills extracted:', resumeSkills); // Debug log
+  console.log('Experience extracted:', experience); // Debug log
+  
   const searchParams: JobSearchParams = {
     skills: resumeSkills,
     experience: experience,
     ...params
   };
 
+  console.log('Search params:', searchParams); // Debug log
+
   try {
     // Search all platforms in parallel
+    console.log('Starting job search with params:', searchParams);
+    
     const [linkedinJobs, naukriJobs, instahyreJobs, wellfoundJobs] = await Promise.allSettled([
       searchLinkedIn(searchParams),
       searchNaukri(searchParams),
@@ -43,12 +50,21 @@ export const searchJobs = async (resumeText: string, params?: Partial<JobSearchP
       searchWellfound(searchParams)
     ]);
 
+    console.log('Job search results:', {
+      linkedin: linkedinJobs.status,
+      naukri: naukriJobs.status,
+      instahyre: instahyreJobs.status,
+      wellfound: wellfoundJobs.status
+    });
+
     const allJobs: JobListing[] = [
       ...(linkedinJobs.status === 'fulfilled' ? linkedinJobs.value : []),
       ...(naukriJobs.status === 'fulfilled' ? naukriJobs.value : []),
       ...(instahyreJobs.status === 'fulfilled' ? instahyreJobs.value : []),
       ...(wellfoundJobs.status === 'fulfilled' ? wellfoundJobs.value : [])
     ];
+
+    console.log('Total jobs fetched:', allJobs.length);
 
     // Sort by match score and return top results
     return allJobs
@@ -73,7 +89,14 @@ const searchLinkedIn = async (params: JobSearchParams): Promise<JobListing[]> =>
     }
 
     const data = await response.json();
-    return data.jobs.map((job: any) => ({
+    console.log('LinkedIn API response:', data); // Debug log
+    
+    if (!data.jobs || !Array.isArray(data.jobs)) {
+      console.error('LinkedIn API returned invalid data:', data);
+      return [];
+    }
+    
+    const processedJobs = data.jobs.map((job: any) => ({
       id: `linkedin-${job.id}`,
       title: job.title,
       company: job.company,
@@ -87,6 +110,9 @@ const searchLinkedIn = async (params: JobSearchParams): Promise<JobListing[]> =>
       skills: extractSkillsFromText(job.description),
       matchScore: calculateMatchScore(params.skills, job.description)
     }));
+    
+    console.log('LinkedIn processed jobs count:', processedJobs.length); // Debug log
+    return processedJobs;
   } catch (error) {
     console.error('LinkedIn search error:', error);
     return [];
@@ -289,7 +315,10 @@ const buildSearchQuery = (params: JobSearchParams): string => {
     queryParts.push(params.jobType);
   }
   
-  return queryParts.join(' ');
+  const finalQuery = queryParts.join(' ');
+  console.log('Final search query:', finalQuery); // Debug log
+  
+  return finalQuery;
 };
 
 const calculateMatchScore = (resumeSkills: string[], jobDescription: string): number => {
