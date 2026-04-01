@@ -99,6 +99,7 @@ export function Snackbar({ message, type = 'info', duration = 3000, onClose }: S
 }
 
 // Hook for using snackbar
+export { useSnackbar, Snackbar };
 export function useSnackbar() {
     const [snackbar, setSnackbar] = useState<{
         message: string;
