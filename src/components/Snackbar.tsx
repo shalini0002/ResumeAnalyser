@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface SnackbarProps {
     message: string;
@@ -24,7 +24,9 @@ export function Snackbar({ message, type = 'info', duration = 3000, onClose }: S
             }, 300);
         }, duration);
 
-        return () => clearTimeout(timer);
+        return () => {
+            clearTimeout(timer);
+        };
     }, [duration, onClose]);
 
     const getTypeStyles = () => {
@@ -99,7 +101,6 @@ export function Snackbar({ message, type = 'info', duration = 3000, onClose }: S
 }
 
 // Hook for using snackbar
-export { useSnackbar, Snackbar };
 export function useSnackbar() {
     const [snackbar, setSnackbar] = useState<{
         message: string;

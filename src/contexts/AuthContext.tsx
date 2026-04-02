@@ -17,10 +17,12 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   const isAuthenticated = !!user;
 
   useEffect(() => {
+    setMounted(true);
     const initAuth = async () => {
       try {
         if (AuthService.isAuthenticated()) {
@@ -56,6 +58,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isAuthenticated,
     loading,
   };
+
+  // Prevent hydration mismatch by not rendering until mounted
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

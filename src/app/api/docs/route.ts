@@ -63,6 +63,242 @@ const swaggerSpec = {
         }
       }
     },
+    '/login': {
+      post: {
+        summary: 'User Login',
+        description: 'Authenticate user and return JWT token for session management',
+        tags: ['Authentication'],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  email: {
+                    type: 'string',
+                    format: 'email',
+                    description: 'User email address',
+                    example: 'user@example.com'
+                  },
+                  password: {
+                    type: 'string',
+                    format: 'password',
+                    description: 'User password',
+                    example: 'password123'
+                  }
+                },
+                required: ['email', 'password']
+              }
+            }
+          }
+        },
+        responses: {
+          200: {
+            description: 'Login successful',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: {
+                      type: 'boolean',
+                      example: true
+                    },
+                    token: {
+                      type: 'string',
+                      description: 'JWT authentication token',
+                      example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+                    },
+                    user: {
+                      type: 'object',
+                      properties: {
+                        id: {
+                          type: 'string',
+                          example: 'user123'
+                        },
+                        email: {
+                          type: 'string',
+                          example: 'user@example.com'
+                        },
+                        name: {
+                          type: 'string',
+                          example: 'John Doe'
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          401: {
+            description: 'Invalid credentials'
+          },
+          400: {
+            description: 'Bad request - Missing email or password'
+          }
+        }
+      }
+    },
+    '/upload': {
+      post: {
+        summary: 'Upload Resume',
+        description: 'Upload resume file for analysis and job matching',
+        tags: ['Resume Management'],
+        requestBody: {
+          required: true,
+          content: {
+            'multipart/form-data': {
+              schema: {
+                type: 'object',
+                properties: {
+                  resume: {
+                    type: 'string',
+                    format: 'binary',
+                    description: 'Resume file (PDF, DOC, DOCX, TXT)'
+                  },
+                  userId: {
+                    type: 'string',
+                    description: 'User ID for file association',
+                    example: 'user123'
+                  }
+                },
+                required: ['resume']
+              }
+            }
+          }
+        },
+        responses: {
+          200: {
+            description: 'Resume uploaded successfully',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: {
+                      type: 'boolean',
+                      example: true
+                    },
+                    fileId: {
+                      type: 'string',
+                      description: 'Unique file identifier',
+                      example: 'file_abc123'
+                    },
+                    fileName: {
+                      type: 'string',
+                      description: 'Original file name',
+                      example: 'resume.pdf'
+                    },
+                    fileSize: {
+                      type: 'integer',
+                      description: 'File size in bytes',
+                      example: 1024000
+                    },
+                    extractedText: {
+                      type: 'string',
+                      description: 'Extracted text from resume',
+                      example: 'John Doe\nSoftware Developer with 5 years experience...'
+                    }
+                  }
+                }
+              }
+            }
+          },
+          400: {
+            description: 'Bad request - Invalid file format or missing file'
+          },
+          500: {
+            description: 'Upload failed'
+          }
+        }
+      }
+    },
+    '/match': {
+      post: {
+        summary: 'Job Matching',
+        description: 'Match uploaded resume with available jobs and calculate compatibility scores',
+        tags: ['Job Matching'],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  resumeText: {
+                    type: 'string',
+                    description: 'Resume text content for matching',
+                    example: 'John Doe\nSoftware Developer with 5 years experience in React, Node.js, and MongoDB...'
+                  },
+                  skills: {
+                    type: 'array',
+                    items: {
+                      type: 'string'
+                    },
+                    description: 'Extracted skills from resume',
+                    example: ['React', 'Node.js', 'MongoDB', 'JavaScript', 'TypeScript']
+                  },
+                  experience: {
+                    type: 'string',
+                    description: 'Experience level',
+                    example: '5+ years'
+                  },
+                  location: {
+                    type: 'string',
+                    description: 'Preferred job location',
+                    example: 'San Francisco, CA'
+                  }
+                },
+                required: ['resumeText', 'skills']
+              }
+            }
+          }
+        },
+        responses: {
+          200: {
+            description: 'Job matching completed successfully',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: {
+                      type: 'boolean',
+                      example: true
+                    },
+                    matches: {
+                      type: 'array',
+                      items: {
+                        $ref: '#/components/schemas/JobMatch'
+                      }
+                    },
+                    totalMatches: {
+                      type: 'integer',
+                      example: 25
+                    },
+                    topMatch: {
+                      $ref: '#/components/schemas/JobMatch'
+                    },
+                    averageMatchScore: {
+                      type: 'number',
+                      example: 78.5
+                    }
+                  }
+                }
+              }
+            }
+          },
+          400: {
+            description: 'Bad request - Missing resume text or skills'
+          },
+          500: {
+            description: 'Matching failed'
+          }
+        }
+      }
+    },
     '/analyze': {
       post: {
         summary: 'Analyze Resume',
@@ -416,17 +652,82 @@ const swaggerSpec = {
           }
         },
         required: ['id', 'title', 'company', 'location', 'description', 'platform', 'url']
+      },
+      JobMatch: {
+        type: 'object',
+        properties: {
+          job: {
+            $ref: '#/components/schemas/Job'
+          },
+          matchScore: {
+            type: 'number',
+            description: 'Compatibility score between resume and job (0-100)',
+            example: 85
+          },
+          matchedSkills: {
+            type: 'array',
+            items: {
+              type: 'string'
+            },
+            description: 'Skills from resume that match job requirements',
+            example: ['React', 'TypeScript', 'JavaScript']
+          },
+          missingSkills: {
+            type: 'array',
+            items: {
+              type: 'string'
+            },
+            description: 'Skills required by job but not found in resume',
+            example: ['GraphQL', 'Docker']
+          },
+          experienceMatch: {
+            type: 'boolean',
+            description: 'Whether experience level matches requirements',
+            example: true
+          },
+          locationMatch: {
+            type: 'boolean',
+            description: 'Whether location preference matches job location',
+            example: true
+          },
+          recommendation: {
+            type: 'string',
+            description: 'Recommendation based on match analysis',
+            example: 'Strong match - Apply immediately'
+          }
+        },
+        required: ['job', 'matchScore', 'matchedSkills']
       }
     }
   },
   tags: [
     {
+      name: 'Application',
+      description: 'Main application pages and UI endpoints'
+    },
+    {
+      name: 'Authentication',
+      description: 'User authentication and session management'
+    },
+    {
+      name: 'Resume Management',
+      description: 'Resume upload, storage, and file management'
+    },
+    {
       name: 'Resume Analysis',
       description: 'Resume upload and analysis endpoints'
     },
     {
+      name: 'Job Matching',
+      description: 'Resume-job compatibility matching algorithms'
+    },
+    {
       name: 'Job Search',
       description: 'Job search and recommendation endpoints'
+    },
+    {
+      name: 'Documentation',
+      description: 'API documentation and Swagger UI'
     }
   ]
 };

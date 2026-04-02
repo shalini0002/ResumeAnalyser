@@ -256,12 +256,12 @@ export default function Dashboard() {
                   </div>
                 </div>
                 
-                <p className="text-lg font-medium text-gray-800 mb-2 relative">
+                <div className="text-lg font-medium text-gray-800 mb-2 relative">
                   <span className="relative">
                     {uploading ? 'Analyzing...' : 'Choose your resume'}
                     <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gray-800 transform -skew-x-12"></div>
                   </span>
-                </p>
+                </div>
                 
                 <p className="text-sm text-gray-600">
                   PDF, DOC, DOCX (Max 10MB)
